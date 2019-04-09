@@ -130,7 +130,65 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 
 		}
 
-		// TODO: Add symbols and labels
+		try {
+			AddressSpace addressSpace = program.getAddressFactory().getDefaultAddressSpace();	
+			SymbolTable symbolTable = program.getSymbolTable();
+			Memory memory =  program.getMemory();
+
+			Address nmiAddress = addressSpace.getAddress(0xFFFA);
+			Symbol nmiSymbol = symbolTable.createLabel(addressSpace.getAddress(0xFFFA), "NMI", SourceType.IMPORTED);
+			nmiSymbol.setPinned(true);
+			nmiSymbol.setPrimary();
+			symbolTable.addExternalEntryPoint(nmiAddress);
+
+			Address resAddress = addressSpace.getAddress(0xFFFC);
+			Symbol resSymbol = symbolTable.createLabel(addressSpace.getAddress(0xFFFC), "RES", SourceType.IMPORTED);
+			resSymbol.setPinned(true);
+			resSymbol.setPrimary();
+			symbolTable.addExternalEntryPoint(resAddress);
+
+			Address irqAddress = addressSpace.getAddress(0xFFFE);
+			Symbol irqSymbol = symbolTable.createLabel(addressSpace.getAddress(0xFFFE), "IRQ", SourceType.IMPORTED);
+			irqSymbol.setPinned(true);
+			irqSymbol.setPrimary();
+			symbolTable.addExternalEntryPoint(irqAddress);
+
+			byte nmiLo = memory.getByte(nmiAddress);
+			byte nmiHi = memory.getByte(nmiAddress.add(1));
+			long nmi = (Byte.toUnsignedLong(nmiHi) << 8) | Byte.toUnsignedLong(nmiLo);
+			Address nmiTargetAddress = addressSpace.getAddress(nmi);
+
+			byte resLo = memory.getByte(resAddress);
+			byte resHi = memory.getByte(resAddress.add(1));
+			long res = (Byte.toUnsignedLong(resHi) << 8) | Byte.toUnsignedLong(resLo);
+			Address resTargetAddress = addressSpace.getAddress(res);
+
+			byte irqLo = memory.getByte(irqAddress);
+			byte irqHi = memory.getByte(irqAddress.add(1));
+			long irq = (Byte.toUnsignedLong(irqHi) << 8) | Byte.toUnsignedLong(irqLo);
+			Address irqTargetAddress = addressSpace.getAddress(irq);
+
+			Symbol resTargetSymbol = symbolTable.createLabel(resTargetAddress, "reset", SourceType.IMPORTED);
+			symbolTable.addExternalEntryPoint(resTargetAddress);
+
+			Symbol nmiTargetSymbol = symbolTable.createLabel(nmiTargetAddress, "vblank", SourceType.IMPORTED);
+			symbolTable.addExternalEntryPoint(nmiTargetAddress);
+
+			Symbol irqTargetSymbol = symbolTable.createLabel(irqTargetAddress, "irq", SourceType.IMPORTED);
+			symbolTable.addExternalEntryPoint(irqTargetAddress);
+
+			// RES should have the highest precedence, followed by NMI, followed by IRQ. We set them
+			// as primary in reverse order because the last `.setPrimary()` call has precedence
+			irqTargetSymbol.setPrimary();
+			nmiTargetSymbol.setPrimary();
+			resTargetSymbol.setPrimary();
+		} catch (InvalidInputException e) {
+			throw new RuntimeException(e);
+		} catch (AddressOutOfBoundsException e) {
+			throw new RuntimeException(e);
+		} catch (MemoryAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
