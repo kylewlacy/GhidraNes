@@ -28,14 +28,24 @@ import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
 import ghidra.framework.store.LockException;
 import ghidra.program.model.address.AddressFactory;
+import ghidra.program.model.address.AddressOutOfBoundsException;
 import ghidra.program.model.address.AddressOverflowException;
+import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.lang.Language;
 import ghidra.program.model.lang.LanguageCompilerSpecPair;
+import ghidra.program.model.listing.CircularDependencyException;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.mem.Memory;
+import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryConflictException;
+import ghidra.program.model.util.AddressLabelInfo;
+import ghidra.program.model.symbol.SourceType;
+import ghidra.program.model.symbol.Symbol;
+import ghidra.program.model.symbol.SymbolTable;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
+import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
 import ghidranes.errors.NesRomException;
 import ghidranes.util.MemoryBlockDescription;
@@ -89,14 +99,24 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			MemoryBlockDescription.uninitialized(0x6000, 0x2000, "WORK_RAM", workRamPermissions, false)
 				.create(program);
 
-			if (rom.prgRom.length > 0) {
-				// TODO: Add support for mappers using overlays
-				// TODO: Add support for mirrored addresses
-				int bankLength = Math.max(rom.prgRom.length, 0x8000);
-				int prgRomPermissions =
-					MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
-				MemoryBlockDescription.initialized(0x8000, bankLength, "PRG_ROM", prgRomPermissions, rom.prgRom, false, monitor)
-					.create(program);
+			// TODO: Support different mappers
+			for (int romMirror = 0; romMirror * rom.prgRom.length < 0x8000; romMirror++) {
+				int romMirrorOffsetStart = romMirror * rom.prgRom.length;
+				int romMirrorLength = Math.min(rom.prgRom.length, 0x8000);
+
+				int romMirrorStart = romMirrorOffsetStart + 0x8000;
+				int romPermissions =
+						MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
+
+				if (romMirror == 0) {
+					byte[] romBytes = Arrays.copyOfRange(rom.prgRom, 0, romMirrorLength);
+					MemoryBlockDescription.initialized(romMirrorStart, romMirrorLength, "PRG_ROM", romPermissions, romBytes, false, monitor)
+						.create(program);
+				}
+				else {
+					MemoryBlockDescription.byteMapped(romMirrorStart, romMirrorLength, "PRG_ROM_MIRROR_" + romMirror, romPermissions, 0x8000)
+						.create(program);
+				}
 			}
 		} catch (NesRomException e) {
 
