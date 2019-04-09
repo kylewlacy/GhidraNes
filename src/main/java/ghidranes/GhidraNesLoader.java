@@ -27,19 +27,16 @@ import ghidra.app.util.opinion.AbstractLibrarySupportLoader;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
 import ghidra.framework.store.LockException;
-import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressOutOfBoundsException;
 import ghidra.program.model.address.AddressOverflowException;
 import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.lang.Language;
 import ghidra.program.model.lang.LanguageCompilerSpecPair;
-import ghidra.program.model.listing.CircularDependencyException;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryConflictException;
-import ghidra.program.model.util.AddressLabelInfo;
 import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.symbol.Symbol;
 import ghidra.program.model.symbol.SymbolTable;
@@ -67,8 +64,8 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 		InputStream bytes = provider.getInputStream(0);
 
 		try {
-			// Try to parse the ROM header
-			NesRomHeader header = new NesRomHeader(bytes);
+			// Try to parse the ROM header (will throw an exception if parsing fails)
+			new NesRomHeader(bytes);
 
 			// If successful, add the load spec
 			LanguageCompilerSpecPair languageCompilerSpecPair = new LanguageCompilerSpecPair("6502:LE:16:default", "default");
