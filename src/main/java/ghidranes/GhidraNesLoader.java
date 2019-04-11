@@ -86,22 +86,19 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			throws CancelledException, IOException {
 		InputStream bytes = provider.getInputStream(0);
 
+		NesRom rom;
 		try {
 			NesRomHeader header = new NesRomHeader(bytes);
-			NesRom rom = new NesRom(header, bytes);
-
-			NromMapper mapper = new NromMapper();
-			mapper.updateMemoryMapForRom(rom, program, monitor);
+			rom = new NesRom(header, bytes);
 		} catch (NesRomException e) {
+			throw new RuntimeException(e);
+		}
 
-		} catch (LockException e) {
-
-		} catch (MemoryConflictException e) {
-
-		} catch (AddressOverflowException e) {
-
-		} catch (DuplicateNameException e) {
-
+		NromMapper mapper = new NromMapper();
+		try {
+			mapper.updateMemoryMapForRom(rom, program, monitor);
+		} catch (LockException | MemoryConflictException | AddressOverflowException | DuplicateNameException e) {
+			throw new RuntimeException(e);
 		}
 
 		try {
@@ -156,11 +153,7 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			irqTargetSymbol.setPrimary();
 			nmiTargetSymbol.setPrimary();
 			resTargetSymbol.setPrimary();
-		} catch (InvalidInputException e) {
-			throw new RuntimeException(e);
-		} catch (AddressOutOfBoundsException e) {
-			throw new RuntimeException(e);
-		} catch (MemoryAccessException e) {
+		} catch (InvalidInputException | AddressOutOfBoundsException | MemoryAccessException e) {
 			throw new RuntimeException(e);
 		}
 	}
