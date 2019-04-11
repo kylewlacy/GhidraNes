@@ -45,6 +45,8 @@ import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
 import ghidranes.errors.NesRomException;
+import ghidranes.errors.UnimplementedNesMapperException;
+import ghidranes.mappers.NesMapper;
 import ghidranes.mappers.NromMapper;
 import ghidranes.util.MemoryBlockDescription;
 
@@ -94,10 +96,10 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			throw new RuntimeException(e);
 		}
 
-		NromMapper mapper = new NromMapper();
 		try {
+			NesMapper mapper = NesMapper.getMapper(rom.header.mapper);
 			mapper.updateMemoryMapForRom(rom, program, monitor);
-		} catch (LockException | MemoryConflictException | AddressOverflowException | DuplicateNameException e) {
+		} catch (LockException | MemoryConflictException | AddressOverflowException | DuplicateNameException | UnimplementedNesMapperException e) {
 			throw new RuntimeException(e);
 		}
 
