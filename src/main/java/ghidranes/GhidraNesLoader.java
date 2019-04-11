@@ -45,6 +45,7 @@ import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
 import ghidranes.errors.NesRomException;
+import ghidranes.mappers.NromMapper;
 import ghidranes.util.MemoryBlockDescription;
 
 /**
@@ -89,32 +90,8 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			NesRomHeader header = new NesRomHeader(bytes);
 			NesRom rom = new NesRom(header, bytes);
 
-			// TODO: Do we always want to include work RAM?
-			// TODO: Support trainer (if ROM has one)
-			int workRamPermissions =
-				MemoryBlockDescription.READ | MemoryBlockDescription.WRITE | MemoryBlockDescription.EXECUTE;
-			MemoryBlockDescription.uninitialized(0x6000, 0x2000, "WORK_RAM", workRamPermissions, false)
-				.create(program);
-
-			// TODO: Support different mappers
-			for (int romMirror = 0; romMirror * rom.prgRom.length < 0x8000; romMirror++) {
-				int romMirrorOffsetStart = romMirror * rom.prgRom.length;
-				int romMirrorLength = Math.min(rom.prgRom.length, 0x8000);
-
-				int romMirrorStart = romMirrorOffsetStart + 0x8000;
-				int romPermissions =
-						MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
-
-				if (romMirror == 0) {
-					byte[] romBytes = Arrays.copyOfRange(rom.prgRom, 0, romMirrorLength);
-					MemoryBlockDescription.initialized(romMirrorStart, romMirrorLength, "PRG_ROM", romPermissions, romBytes, false, monitor)
-						.create(program);
-				}
-				else {
-					MemoryBlockDescription.byteMapped(romMirrorStart, romMirrorLength, "PRG_ROM_MIRROR_" + romMirror, romPermissions, 0x8000)
-						.create(program);
-				}
-			}
+			NromMapper mapper = new NromMapper();
+			mapper.updateMemoryMapForRom(rom, program, monitor);
 		} catch (NesRomException e) {
 
 		} catch (LockException e) {

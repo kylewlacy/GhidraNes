@@ -5,9 +5,9 @@ import java.io.InputStream;
 import ghidranes.errors.NesRomEofException;
 
 public class NesRom {
-	NesRomHeader header;
+	public NesRomHeader header;
 	byte[] trainerBytes;
-	byte[] prgRom;
+	public byte[] prgRom;
 	byte[] chrRom;
 
 	public NesRom(NesRomHeader romHeader, InputStream bytes) throws NesRomEofException, IOException {
