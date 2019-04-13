@@ -17,6 +17,8 @@ public abstract class NesMapper {
 		switch (mapperNum) {
 		case 0:
 			return new NromMapper();
+		case 2:
+			return new UxromMapper();
 		default:
 			throw new UnimplementedNesMapperException(mapperNum);
 		}
