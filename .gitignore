@@ -17,6 +17,7 @@ local.properties
 .project
 .gradle
 build
+dist
 
 # External tool builders
 .externalToolBuilders/
