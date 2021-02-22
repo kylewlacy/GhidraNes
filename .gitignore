@@ -2,6 +2,7 @@
 .metadata
 bin/
 tmp/
+.idea
 *.tmp
 *.bak
 *.swp
