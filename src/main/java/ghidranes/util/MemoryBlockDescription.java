@@ -50,11 +50,11 @@ public class MemoryBlockDescription {
 			break;
 		case BIT_MAPPED:
 			mappedAddress = addressSpace.getAddress(mappedTo);
-			memory.createBitMappedBlock(name, startAddress, mappedAddress, length);
+			memory.createBitMappedBlock(name, startAddress, mappedAddress, length, overlay);
 			break;
 		case BYTE_MAPPED:
 			mappedAddress = addressSpace.getAddress(mappedTo);
-			memory.createByteMappedBlock(name, startAddress, mappedAddress, length);
+			memory.createByteMappedBlock(name, startAddress, mappedAddress, length, overlay);
 			break;
 		}
 		
