@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
  */
 package ghidranes;
 
+import static ghidranes.util.AddressSpaceUtil.getLittleEndianAddress;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -46,7 +47,6 @@ import ghidra.util.task.TaskMonitor;
 import ghidranes.errors.NesRomException;
 import ghidranes.errors.UnimplementedNesMapperException;
 import ghidranes.mappers.NesMapper;
-import ghidranes.mappers.NromMapper;
 import ghidranes.util.MemoryBlockDescription;
 
 /**
@@ -103,7 +103,7 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 		}
 
 		try {
-			AddressSpace addressSpace = program.getAddressFactory().getDefaultAddressSpace();	
+			AddressSpace addressSpace = program.getAddressFactory().getDefaultAddressSpace();
 			SymbolTable symbolTable = program.getSymbolTable();
 			Memory memory =  program.getMemory();
 
@@ -125,20 +125,11 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			irqSymbol.setPrimary();
 			symbolTable.addExternalEntryPoint(irqAddress);
 
-			byte nmiLo = memory.getByte(nmiAddress);
-			byte nmiHi = memory.getByte(nmiAddress.add(1));
-			long nmi = (Byte.toUnsignedLong(nmiHi) << 8) | Byte.toUnsignedLong(nmiLo);
-			Address nmiTargetAddress = addressSpace.getAddress(nmi);
+			Address nmiTargetAddress = getLittleEndianAddress(addressSpace, memory, nmiAddress);
 
-			byte resLo = memory.getByte(resAddress);
-			byte resHi = memory.getByte(resAddress.add(1));
-			long res = (Byte.toUnsignedLong(resHi) << 8) | Byte.toUnsignedLong(resLo);
-			Address resTargetAddress = addressSpace.getAddress(res);
+			Address resTargetAddress = getLittleEndianAddress(addressSpace, memory, resAddress);
 
-			byte irqLo = memory.getByte(irqAddress);
-			byte irqHi = memory.getByte(irqAddress.add(1));
-			long irq = (Byte.toUnsignedLong(irqHi) << 8) | Byte.toUnsignedLong(irqLo);
-			Address irqTargetAddress = addressSpace.getAddress(irq);
+			Address irqTargetAddress = getLittleEndianAddress(addressSpace, memory, irqAddress);
 
 			Symbol resTargetSymbol = symbolTable.createLabel(resTargetAddress, "reset", SourceType.IMPORTED);
 			symbolTable.addExternalEntryPoint(resTargetAddress);
