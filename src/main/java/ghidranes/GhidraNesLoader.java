@@ -15,6 +15,7 @@
  */
 package ghidranes;
 
+import ghidra.program.model.mem.MemoryBlock;
 import static ghidranes.util.AddressSpaceUtil.getLittleEndianAddress;
 import java.io.IOException;
 import java.io.InputStream;
@@ -145,6 +146,24 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			irqTargetSymbol.setPrimary();
 			nmiTargetSymbol.setPrimary();
 			resTargetSymbol.setPrimary();
+
+			MakeSym(program, monitor, log, 0x2000, 1, "PPUCTRL");
+			MakeSym(program, monitor, log, 0x2001, 1, "PPUMASK");
+			MakeSym(program, monitor, log, 0x2002, 1, "PPUSTATUS");
+			MakeSym(program, monitor, log, 0x2003, 1, "OAMADDR");
+			MakeSym(program, monitor, log, 0x2004, 1, "OAMDATA");
+			MakeSym(program, monitor, log, 0x2005, 1, "PPUSCROLL");
+			MakeSym(program, monitor, log, 0x2006, 1, "PPUADDR");
+			MakeSym(program, monitor, log, 0x2007, 1, "PPUDATA");
+			MakeSym(program, monitor, log, 0x4000, 4, "APU_SND_SQUARE1_REG");
+			MakeSym(program, monitor, log, 0x4004, 4, "APU_SND_SQUARE2_REG");
+			MakeSym(program, monitor, log, 0x4008, 4, "APU_SND_TRIANGLE_REG");
+			MakeSym(program, monitor, log, 0x400c, 2, "APU_NOISE_REG");
+			MakeSym(program, monitor, log, 0x4010, 4, "APU_DELTA_REG");
+			MakeSym(program, monitor, log, 0x4014, 1, "OAMDMA");
+			MakeSym(program, monitor, log, 0x4015, 1, "APU_MASTERCTRL_REG");
+			MakeSym(program, monitor, log, 0x4016, 1, "JOYPAD_PORT1");
+			MakeSym(program, monitor, log, 0x4017, 1, "JOYPAD_PORT2");
 		} catch (InvalidInputException | AddressOutOfBoundsException | MemoryAccessException e) {
 			throw new RuntimeException(e);
 		}
@@ -187,9 +206,6 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 				.create(program);
 			MemoryBlockDescription.byteMapped(0x1800, 0x0800, "RAM_MIRROR_3", ramPermissions, 0x0000)
 				.create(program);
-
-			MemoryBlockDescription.uninitialized(0x2000, 0x0008, "PPU", ppuPermissions, false)
-				.create(program);
 			MemoryBlockDescription.byteMapped(0x2008, 0x0008, "PPU_MIRROR_1", ppuPermissions, 0x2000)
 				.create(program);
 			MemoryBlockDescription.byteMapped(0x2010, 0x0010, "PPU_MIRROR_2", ppuPermissions, 0x2000)
@@ -211,8 +227,6 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			MemoryBlockDescription.byteMapped(0x3000, 0x1000, "PPU_MIRROR_10", ppuPermissions, 0x2000)
 				.create(program);
 
-			MemoryBlockDescription.uninitialized(0x4000, 0x0018, "APU_IO", apuIoPermissions, false)
-				.create(program);
 		} catch (LockException e) {
 			throw new RuntimeException(e);
 		} catch (DuplicateNameException e) {
@@ -223,6 +237,19 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			throw new RuntimeException(e);
 		} catch (CancelledException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	private void MakeSym(Program program, TaskMonitor monitor, MessageLog log, int address, int size, String name) {
+		try {
+			Address addr = program.getAddressFactory().getDefaultAddressSpace().getAddress(address);
+			MemoryBlock block = program.getMemory().createInitializedBlock(name, addr, size, (byte)0x00, monitor, false);
+			block.setRead(true);
+			block.setWrite(true);
+			block.setExecute(false);
+			program.getSymbolTable().createLabel(addr, name, SourceType.IMPORTED);
+		}catch(Exception e) {
+			log.appendException(e);
 		}
 	}
 }
