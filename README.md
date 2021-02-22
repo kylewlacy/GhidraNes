@@ -34,6 +34,11 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
 5. Open "GhidraDev" > "Link Ghidra...". Add your Ghidra installation, click "Next >", then select the "GhidraNes" as the Java project. Click "Finish".
 6. Run the project in Eclipse to start Ghidra and the GhidraNes extension.
 
+### Building a release from Gradle
+1. Install gradle
+2. `export GHIDRA_INSTALL_DIR=/path/to/ghidra`
+3. `gradle assemble`
+
 ### Building a release from Eclipse
 
 **NOTE:** Ensure the GhidraNes Eclipse project is set up with the _earliest_ version of Java that should be targeted. Using a later version of Java can cause compatibility issues!
