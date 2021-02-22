@@ -109,21 +109,15 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			Memory memory =  program.getMemory();
 
 			Address nmiAddress = addressSpace.getAddress(0xFFFA);
-			Symbol nmiSymbol = symbolTable.createLabel(addressSpace.getAddress(0xFFFA), "NMI", SourceType.IMPORTED);
-			nmiSymbol.setPinned(true);
-			nmiSymbol.setPrimary();
+			createPinnedLabel(symbolTable, nmiAddress, "NMI");
 			symbolTable.addExternalEntryPoint(nmiAddress);
 
 			Address resAddress = addressSpace.getAddress(0xFFFC);
-			Symbol resSymbol = symbolTable.createLabel(addressSpace.getAddress(0xFFFC), "RES", SourceType.IMPORTED);
-			resSymbol.setPinned(true);
-			resSymbol.setPrimary();
+			createPinnedLabel(symbolTable, resAddress, "RES");
 			symbolTable.addExternalEntryPoint(resAddress);
 
 			Address irqAddress = addressSpace.getAddress(0xFFFE);
-			Symbol irqSymbol = symbolTable.createLabel(addressSpace.getAddress(0xFFFE), "IRQ", SourceType.IMPORTED);
-			irqSymbol.setPinned(true);
-			irqSymbol.setPrimary();
+			createPinnedLabel(symbolTable, irqAddress, "IRQ");
 			symbolTable.addExternalEntryPoint(irqAddress);
 
 			Address nmiTargetAddress = getLittleEndianAddress(addressSpace, memory, nmiAddress);
@@ -132,11 +126,11 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 
 			Address irqTargetAddress = getLittleEndianAddress(addressSpace, memory, irqAddress);
 
-			Symbol resTargetSymbol = symbolTable.createLabel(resTargetAddress, "reset", SourceType.IMPORTED);
-			symbolTable.addExternalEntryPoint(resTargetAddress);
-
 			Symbol nmiTargetSymbol = symbolTable.createLabel(nmiTargetAddress, "vblank", SourceType.IMPORTED);
 			symbolTable.addExternalEntryPoint(nmiTargetAddress);
+
+			Symbol resTargetSymbol = symbolTable.createLabel(resTargetAddress, "reset", SourceType.IMPORTED);
+			symbolTable.addExternalEntryPoint(resTargetAddress);
 
 			Symbol irqTargetSymbol = symbolTable.createLabel(irqTargetAddress, "irq", SourceType.IMPORTED);
 			symbolTable.addExternalEntryPoint(irqTargetAddress);
@@ -167,6 +161,12 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 		} catch (InvalidInputException | AddressOutOfBoundsException | MemoryAccessException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static void createPinnedLabel(final SymbolTable symbolTable, final Address address, final String label) throws InvalidInputException {
+		Symbol nmiSymbol = symbolTable.createLabel(address, label, SourceType.IMPORTED);
+		nmiSymbol.setPinned(true);
+		nmiSymbol.setPrimary();
 	}
 
 	@Override
