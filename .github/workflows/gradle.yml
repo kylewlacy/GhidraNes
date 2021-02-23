@@ -42,7 +42,8 @@ jobs:
     - name: Build extension
       uses: eskatos/gradle-command-action@v1
       with:
-        build-root-directory: ${{ github.workspace }}/build
+        gradle-version: '6.8.2'
+#         build-root-directory: ${{ github.workspace }}/build
         arguments: '-PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
 
     - name: Upload built extension
