@@ -3,6 +3,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter.BASIC_ISO_DATE
 import java.util.Properties
 
+import org.gradle.api.tasks.wrapper.Wrapper.DistributionType
+
+
 plugins {
     java
     kotlin("jvm") version "1.4.30"
@@ -15,7 +18,7 @@ repositories {
 
 val ghidraDir = System.getenv("GHIDRA_INSTALL_DIR")
     ?: (project.findProperty("ghidra.dir") as? String)
-    ?: throw IllegalStateException("Can't find Ghidra installation")
+    ?: throw IllegalStateException("Can't find Ghidra installation directory from environment variable GHIDRA_INSTALL_DIR")
 
 val ghidraProps = Properties().apply { file("$ghidraDir/Ghidra/application.properties").inputStream().use { load(it) } }
 val ghidraVersion = ghidraProps.getProperty("application.version")!!
