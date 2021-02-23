@@ -48,12 +48,12 @@ jobs:
     - name: list what we have
       run: find .
     - name: make sure zip is in dist
-      run: ls build/dist/*.zip
+      run: ls build/distributions/*.zip
     - name: Upload built extension
       uses: actions/upload-artifact@v2
       with:
         name: extension
-        path: build/dist/*.zip
+        path: build/distributions/*.zip
 
   release:
     runs-on: ubuntu-latest
