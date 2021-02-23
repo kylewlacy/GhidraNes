@@ -47,6 +47,8 @@ jobs:
         arguments: '-Pghidra.dir=${{ github.workspace }}/${{ env.ghidra-directory }} assemble'
     - name: list what we have
       run: find .
+    - name: make sure zip is in dist
+      run: ls build/dist/*.zip
     - name: Upload built extension
       uses: actions/upload-artifact@v2
       with:
