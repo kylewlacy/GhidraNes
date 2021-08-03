@@ -20,7 +20,7 @@ public class MemoryBlockDescription {
 	public static int WRITE = 1 << 1;
 	public static int EXECUTE = 1 << 2;
 	public static int VOLATILE = 1 << 3;
-	
+
 	long start;
 	long length;
 	String name;
@@ -30,17 +30,17 @@ public class MemoryBlockDescription {
 	long mappedTo;
 	boolean overlay;
 	TaskMonitor monitor;
-	
+
 	MemoryBlockDescription() {
-		
+
 	}
 
 	public void create(Memory memory, AddressSpace addressSpace) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
 		Address startAddress = addressSpace.getAddress(start);
 		InputStream dataStream = new ByteArrayInputStream(data);
-		
+
 		Address mappedAddress;
-		
+
 		switch(type) {
 		case INITIALIZED:
 			memory.createInitializedBlock(name, startAddress, dataStream, length, monitor, overlay);
@@ -57,18 +57,18 @@ public class MemoryBlockDescription {
 			memory.createByteMappedBlock(name, startAddress, mappedAddress, length);
 			break;
 		}
-		
+
 		MemoryBlock block = memory.getBlock(name);
 		block.setRead((permissions & READ) != 0);
 		block.setWrite((permissions & WRITE) != 0);
 		block.setExecute((permissions & EXECUTE) != 0);
 		block.setVolatile((permissions & VOLATILE) != 0);
 	}
-	
+
 	public void create(Program program) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
 		create(program.getMemory(), program.getAddressFactory().getDefaultAddressSpace());
 	}
-	
+
 	public static MemoryBlockDescription initialized(
 		long start,
 		long length,
@@ -87,10 +87,10 @@ public class MemoryBlockDescription {
 		block.data = data;
 		block.overlay = overlay;
 		block.monitor = monitor;
-		
+
 		return block;
 	}
-	
+
 	public static MemoryBlockDescription uninitialized(
 		long start,
 		long length,
@@ -106,10 +106,10 @@ public class MemoryBlockDescription {
 		block.type = MemoryBlockType.UNINITIALIZED;
 		block.data = new byte[0];
 		block.overlay = overlay;
-		
+
 		return block;
 	}
-	
+
 	public static MemoryBlockDescription bitMapped(
 		long start,
 		long length,
@@ -126,10 +126,10 @@ public class MemoryBlockDescription {
 		block.data = new byte[0];
 		block.mappedTo = mappedTo;
 		block.overlay = false;
-		
+
 		return block;
 	}
-	
+
 	public static MemoryBlockDescription byteMapped(
 		long start,
 		long length,
@@ -146,7 +146,7 @@ public class MemoryBlockDescription {
 		block.data = new byte[0];
 		block.mappedTo = mappedTo;
 		block.overlay = false;
-		
+
 		return block;
 	}
 }
