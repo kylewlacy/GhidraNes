@@ -46,7 +46,6 @@ import ghidra.util.task.TaskMonitor;
 import ghidranes.errors.NesRomException;
 import ghidranes.errors.UnimplementedNesMapperException;
 import ghidranes.mappers.NesMapper;
-import ghidranes.mappers.NromMapper;
 import ghidranes.util.MemoryBlockDescription;
 
 /**
