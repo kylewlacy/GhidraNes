@@ -25,14 +25,16 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
 4. Analyze the file when prompted (or go to "Analysis" > "Auto Analyze..."). Leave the settings as default and click "Analyze".
 5. Done, the game will be disassembled! On the left-hand side, under "Symbol Tree" > "Functions", open `reset` to jump to the reset vector (where execution starts), or `vblank` to jump to the NMI vector (where execution goes during VBlank).
 
-## Developing
+## Development
+
+### Developing with Eclipse
 
 1. Install Java and Ghidra.
 2. install Eclipse.
 3. Install the GhidraDev Eclipse plugin. Instructions can be found in your Ghidra install directory, under `Extensions/Eclipse/GhidraDev/GhidraDev_README.html`.
-4. In Eclipse, open the GhidraNes repo by going to "File" > "Open Projects from File System...".
+4. In Eclipse, open the GhidraNes repo by going to "File" > "Open Projects from File System...". Click "Directory", then choose this repo (the _top-level_ folder containing this `README.md` file and the `GhidraNes` subdirectory). Finally, click "Finish".
 5. Open "GhidraDev" > "Link Ghidra...". Add your Ghidra installation, click "Next >", then select the "GhidraNes" as the Java project. Click "Finish".
-6. Run the project in Eclipse to start Ghidra and the GhidraNes extension.
+6. Go to "Run" > "Run As" > "Ghidra" to run Ghidra with the GhidraNes extension.
 
 ### Building a release from Eclipse
 
@@ -40,4 +42,19 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
 
 1. Install Gradle (with [SDKMAN](https://sdkman.io/), this can be done with `sdk install gradle`).
 2. In Eclipse, open "GhidraDev" > "Export" > "Ghidra Module Extension...". Choose "GhidraNes" as the project, click "Next >", then choose "Local installation directory:" and browse to your Gradle installation dir (with SDKMAN, this will be at `~/.sdkman/candidates/gradle/$GRADLE_VERSION`). Click "Finish".
-3. The built zip file will be saved in the `dist/` directory.
+3. The built zip file will be saved in the `GhidraNes/dist/` directory. See the "Installation" section for details on installing the built zip.
+
+### Developing with another editor (such as VS Code)
+
+1. Install Java and Ghidra.
+2. Configure the JDK settings in your editor.
+    - For VSCode: Follow the official ["Getting Started with Java in VS Code"](https://code.visualstudio.com/docs/java/java-tutorial) guide.
+3. Copy the `GhidraNes/gradle.properties.example` file to `GhidraNes/gradle.properties` and configure Ghirda's installation directory as needed.
+4. Import the GhidraNes repo as a Java project (the _top-level_ folder containing this `README.md` file and the `GhidraNes` subdirectory).
+
+### Building a release with Gradle
+
+1. Move to the inner `GhidraNes` subdirectory: `cd GhidraNes/GhidraNes`
+2. Run `gradle buildExtension`
+    - If the `gradle.properties` file hasn't been set up, properties can be passed to Gradle directly, e.g. `gradle buildExtension -PGHIDRA_INSTALL_DIR=/home/user/ghidra_10.0.1_PUBLIC`
+3. The built zip file will be saved in the `GhidraNes/dist/` directory. See the "Installation" section for details on installing the built zip.
