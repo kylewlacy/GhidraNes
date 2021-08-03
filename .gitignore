@@ -1,4 +1,9 @@
+### Project files to ignore
 
+# Developer-specific Gradle variables
+gradle.properties
+
+### General files to ignore
 .metadata
 bin/
 tmp/
