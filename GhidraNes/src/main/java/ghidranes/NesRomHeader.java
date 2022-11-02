@@ -19,7 +19,7 @@ public class NesRomHeader {
 		if (magicBytes.length < 4) {
 			throw new NesRomEofException();
 		}
-		if (magicBytes[0] != 'N' || magicBytes[1] != 'E' && magicBytes[2] != 'S' && magicBytes[3] != 0x1A) {
+		if (magicBytes[0] != 'N' || magicBytes[1] != 'E' || magicBytes[2] != 'S' || magicBytes[3] != 0x1A) {
 			throw new InvalidNesRomHeaderException("Input is not a valid NES ROM");
 		}
 
