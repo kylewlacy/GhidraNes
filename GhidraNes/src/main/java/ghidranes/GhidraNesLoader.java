@@ -47,9 +47,10 @@ import ghidranes.errors.NesRomException;
 import ghidranes.errors.UnimplementedNesMapperException;
 import ghidranes.mappers.NesMapper;
 import ghidranes.util.MemoryBlockDescription;
+import ghidranes.util.NesMmio;
 
 /**
- * TODO: Provide class-level documentation that describes what this loader does.
+ * This loader parses an iNES ROM file and maps the PRG and CHR rom appropriately
  */
 public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 
@@ -107,19 +108,19 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			Memory memory =  program.getMemory();
 
 			Address nmiAddress = addressSpace.getAddress(0xFFFA);
-			Symbol nmiSymbol = symbolTable.createLabel(addressSpace.getAddress(0xFFFA), "NMI", SourceType.IMPORTED);
+			Symbol nmiSymbol = symbolTable.createLabel(nmiAddress, "NMI", SourceType.IMPORTED);
 			nmiSymbol.setPinned(true);
 			nmiSymbol.setPrimary();
 			symbolTable.addExternalEntryPoint(nmiAddress);
 
 			Address resAddress = addressSpace.getAddress(0xFFFC);
-			Symbol resSymbol = symbolTable.createLabel(addressSpace.getAddress(0xFFFC), "RES", SourceType.IMPORTED);
+			Symbol resSymbol = symbolTable.createLabel(resAddress, "RES", SourceType.IMPORTED);
 			resSymbol.setPinned(true);
 			resSymbol.setPrimary();
 			symbolTable.addExternalEntryPoint(resAddress);
 
 			Address irqAddress = addressSpace.getAddress(0xFFFE);
-			Symbol irqSymbol = symbolTable.createLabel(addressSpace.getAddress(0xFFFE), "IRQ", SourceType.IMPORTED);
+			Symbol irqSymbol = symbolTable.createLabel(irqAddress, "IRQ", SourceType.IMPORTED);
 			irqSymbol.setPinned(true);
 			irqSymbol.setPrimary();
 			symbolTable.addExternalEntryPoint(irqAddress);
@@ -153,6 +154,44 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			irqTargetSymbol.setPrimary();
 			nmiTargetSymbol.setPrimary();
 			resTargetSymbol.setPrimary();
+
+			NesMmio []registers = {
+				new NesMmio(addressSpace, 0x2000, "PPUCTRL"),
+				new NesMmio(addressSpace, 0x2001, "PPUMASK"),
+				new NesMmio(addressSpace, 0x2002, "PPUSTATUS"),
+				new NesMmio(addressSpace, 0x2003, "OAMADDR"),
+				new NesMmio(addressSpace, 0x2004, "OAMDATA"),
+				new NesMmio(addressSpace, 0x2005, "PPUSCROLL"),
+				new NesMmio(addressSpace, 0x2006, "PPUADDR"),
+				new NesMmio(addressSpace, 0x2007, "PPUDATA"),
+				new NesMmio(addressSpace, 0x4000, "SQ1_VOL"),
+				new NesMmio(addressSpace, 0x4001, "SQ1_SWEEP"),
+				new NesMmio(addressSpace, 0x4002, "SQ1_LO"),
+				new NesMmio(addressSpace, 0x4003, "SQ1_HI"),
+				new NesMmio(addressSpace, 0x4004, "SQ2_VOL"),
+				new NesMmio(addressSpace, 0x4005, "SQ2_SWEEP"),
+				new NesMmio(addressSpace, 0x4006, "SQ2_LO"),
+				new NesMmio(addressSpace, 0x4007, "SQ2_HI"),
+				new NesMmio(addressSpace, 0x4008, "TRI_LINEAR"),
+				new NesMmio(addressSpace, 0x400a, "TRI_LO"),
+				new NesMmio(addressSpace, 0x400b, "TRI_HI"),
+				new NesMmio(addressSpace, 0x400c, "NOISE_VOL"),
+				new NesMmio(addressSpace, 0x400e, "NOISE_LO"),
+				new NesMmio(addressSpace, 0x400f, "NOISE_HI"),
+				new NesMmio(addressSpace, 0x4010, "DMC_FREQ"),
+				new NesMmio(addressSpace, 0x4011, "DMC_RAW"),
+				new NesMmio(addressSpace, 0x4012, "DMC_START"),
+				new NesMmio(addressSpace, 0x4013, "DMC_LEN"),
+				new NesMmio(addressSpace, 0x4014, "OAMDMA"),
+				new NesMmio(addressSpace, 0x4015, "SND_CHN"),
+				new NesMmio(addressSpace, 0x4016, "JOY1"),
+				new NesMmio(addressSpace, 0x4017, "JOY2"),
+			};
+			for (int i = 0; i < registers.length; i++) {
+				Symbol s = symbolTable.createLabel(registers[i].address, registers[i].name, SourceType.IMPORTED);
+				s.setPinned(true);
+			}
+
 		} catch (InvalidInputException | AddressOutOfBoundsException | MemoryAccessException e) {
 			throw new RuntimeException(e);
 		}

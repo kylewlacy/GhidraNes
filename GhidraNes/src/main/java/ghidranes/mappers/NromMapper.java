@@ -16,9 +16,9 @@ public class NromMapper extends NesMapper {
 	@Override
 	public void updateMemoryMapForRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
 		// TODO: Do we always want to include work RAM?
-		int workRamPermissions =
+		int sramPermissions =
 			MemoryBlockDescription.READ | MemoryBlockDescription.WRITE | MemoryBlockDescription.EXECUTE;
-		MemoryBlockDescription.uninitialized(0x6000, 0x2000, "WORK_RAM", workRamPermissions, false)
+		MemoryBlockDescription.uninitialized(0x6000, 0x2000, "SRAM", sramPermissions, false)
 			.create(program);
 
 		// TODO: Do we need all this? It appears no NROM games have anything besides 16K or 32K, so we will only ever need to create one mirror

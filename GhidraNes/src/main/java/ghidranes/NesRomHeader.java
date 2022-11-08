@@ -80,16 +80,16 @@ public class NesRomHeader {
 		boolean flagPrgRamBit         = (flags10 & 0b0001_0000) != 0;
 //		boolean busConflictBit        = (flags10 & 0b0010_0000) != 0;
 
-		this.prgRomSizeBytes = prgRomSizeField * 16_384;
-		this.chrRomSizeBytes = chrRomSizeField * 8_192;
+		this.prgRomSizeBytes = prgRomSizeField * 0x4000;
+		this.chrRomSizeBytes = chrRomSizeField * 0x2000;
 		if (flagPrgRamBit) {
 			if (prgRamSizeField == 0) {
                 // When a ROM has the PRG RAM bit set but has a PRG RAM
                 // size of 0, then a fallback size of 8KB is used
-				this.prgRamSizeBytes = 8_192;
+				this.prgRamSizeBytes = 0x2000;
 			}
 			else {
-				this.prgRamSizeBytes = prgRamSizeField * 8_192;
+				this.prgRamSizeBytes = prgRamSizeField * 0x2000;
 			}
 		}
 		else {
