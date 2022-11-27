@@ -12,7 +12,7 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
 
 ## Installation
 
-1. Install a Compatible version of Java and Ghidra (Java 11+, tested with Ghidra 10.0.1).
+1. Install a Compatible version of Java and Ghidra (Java 11+, tested with Ghidra 10.2.2).
 2. Download the latest [GhidraNes release](https://github.com/kylewlacy/GhidraNes/releases).
 3. Go to "File" > "Install Extensions...". Click "+" in the top-right corner and choose the GhidraNes Zip. Click "OK" to install the extension.
 4. Restart Ghidra.
@@ -56,5 +56,5 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
 
 1. Move to the inner `GhidraNes` subdirectory: `cd GhidraNes/GhidraNes`
 2. Run `gradle buildExtension`
-    - If the `gradle.properties` file hasn't been set up, properties can be passed to Gradle directly, e.g. `gradle buildExtension -PGHIDRA_INSTALL_DIR=/home/user/ghidra_10.0.1_PUBLIC`
+    - If the `gradle.properties` file hasn't been set up, properties can be passed to Gradle directly, e.g. `gradle buildExtension -PGHIDRA_INSTALL_DIR=/home/user/ghidra_10.2.2_PUBLIC`
 3. The built zip file will be saved in the `GhidraNes/dist/` directory. See the "Installation" section for details on installing the built zip.

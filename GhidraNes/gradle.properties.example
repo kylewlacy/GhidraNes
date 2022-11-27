@@ -1,2 +1,2 @@
 # Set this to the full path of your Ghidra installation
-GHIDRA_INSTALL_DIR=/home/user/ghidra_10.0.1_PUBLIC
+GHIDRA_INSTALL_DIR=/home/user/ghidra_10.2.2_PUBLIC
