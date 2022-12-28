@@ -2,12 +2,17 @@
 
 ## [Unreleased]
 
+## [v20221227-10.2.2] - 2022-12-27
+## Added
+
+- Initial support for iNES mapper 19 ([#8](https://github.com/kylewlacy/GhidraNes/pull/8) by [@Notify-ctrl](https://github.com/Notify-ctrl))
+
 ## [v20221127-10.2.2] - 2022-11-27
 ### Added
-- Initial support for MMC1 mapper (iNES mapper 1) ([#7](https://github.com/kylewlacy/GhidraNes/pull/7) by @Grazfather)
+- Initial support for MMC1 mapper (iNES mapper 1) ([#7](https://github.com/kylewlacy/GhidraNes/pull/7) by [@Grazfather](https://github.com/Grazfather))
 
 ### Fixed
-- Fixed magic number check for iNES 1.0 ROMs ([#5](https://github.com/kylewlacy/GhidraNes/pull/5) by @Grazfather)
+- Fixed magic number check for iNES 1.0 ROMs ([#5](https://github.com/kylewlacy/GhidraNes/pull/5) by [@Grazfather](https://github.com/Grazfather))
 
 ### Changed
 - Added more register labels ([#6](https://github.com/kylewlacy/GhidraNes/pull/6) by @Grazfather)
@@ -21,7 +26,8 @@
 ### Added
 - Initial release, including support for iNES 1.0 ROMs with NROM mappers (mapper 0)
 
-[Unreleased]: https://github.com/kylewlacy/GhidraNes/compare/v20221127-10.2.2...HEAD
+[Unreleased]: https://github.com/kylewlacy/GhidraNes/compare/v20221227-10.2.2...HEAD
+[v20221227-10.2.2]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20221227-10.2.2
 [v20221127-10.2.2]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20221127-10.2.2
 [v20210802-10.0.1]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20210802-10.0.1
 [v20200912-9.1.2]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20200912-9.1.2
