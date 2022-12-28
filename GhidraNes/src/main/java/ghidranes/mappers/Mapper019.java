@@ -12,8 +12,8 @@ import ghidra.util.task.TaskMonitor;
 import ghidranes.NesRom;
 import ghidranes.util.MemoryBlockDescription;
 
-// TODO: Mapper 019 has some writable registers mapped at 0x8000-0xFFFF
-//       and I don't know how to handle this situation
+// TODO: Mapper 019 has some writable registers mapped at 0x8000-0xFFFF,
+// which aren't currently handled
 
 public class Mapper019 extends NesMapper {
 	@Override
@@ -23,7 +23,7 @@ public class Mapper019 extends NesMapper {
 		MemoryBlockDescription.uninitialized(0x6000, 0x2000, "SRAM", sramPermissions, false)
 			.create(program);
 
-    int bank;
+		int bank = 0;
 		for (bank = 0; (bank + 1) * 0x2000 < rom.prgRom.length; bank++) {
 			int romPermissions = MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
 
@@ -37,11 +37,11 @@ public class Mapper019 extends NesMapper {
 				.create(program);
 		}
 
-    // E000-FFFF is fixed at the last bank
-    int romPermissions = MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
+		// E000-FFFF is fixed at the last bank
+		int romPermissions = MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
 		byte[] rombankBytes = Arrays.copyOfRange(rom.prgRom, bank*0x2000, (bank+1)*0x2000);
-    MemoryBlockDescription.initialized(0xE000, 0x2000, "Fixed PRG" + bank, romPermissions, rombankBytes, false, monitor)
-				.create(program);
+		MemoryBlockDescription.initialized(0xE000, 0x2000, "PRG" + bank + "_FIXED", romPermissions, rombankBytes, false, monitor)
+			.create(program);
 	}
 
 }
