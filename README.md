@@ -7,7 +7,11 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
 ## Features
 
 - Import NES ROMs in the iNES format. The following mappers are supported:
-    - NROM (mapper 0)
+    - [NROM](https://www.nesdev.org/wiki/NROM) (mapper 0)
+    - [MMC1](https://www.nesdev.org/wiki/MMC1) (mapper 1)
+    - [AxROM](https://www.nesdev.org/wiki/AxROM) (mapper 7)
+    - [Namco 129/163](https://www.nesdev.org/wiki/INES_Mapper_019) (mapper 19)
+
 - Add labels and memory blocks in disassembly, making it easier to jump around a disassembled ROM!
 
 ## Installation
