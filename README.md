@@ -14,6 +14,26 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
 
 - Add labels and memory blocks in disassembly, making it easier to jump around a disassembled ROM!
 
+### Bank switching
+
+GhidraNes maps each bank of the ROM to its own memory block, but there is no control-flow analysis implemented that handles bank switching automatically. Instead, handling bank switching in the disassembly is a manual process. Take this function for example:
+
+![Ghidra disassembly showing a "reset" function consisting of "LDA #0x0", "STA DAT_8000", and "JMP (0xfffc)=>reset". The gutter shows this function as an infinite loop](.github/screenshots/bank-switching-broken.png)
+
+This disassembled function is doing a bank switch: the write to `DAT_8000` switches the PRG ROM to bank 0 in this case. Cases like this can be fixed in Ghidra using the following steps:
+
+1. Right click the `JMP` instruction
+2. Click "References > Add/Edit (R)"
+3. Double click the destination operand
+4. For the "To Address" field, change the left-hand dropdown from "RAM:" to the appropriate memory bank ("PRG0::" for this example)
+5. Click "Update"
+
+The disassembly should now show a jump to the correct bank:
+
+![Ghidra disassembly showing the same "reset" function, but the "JMP" instruction now goes to "(0xfffc)=>LAB_PRG0__ffaf"](.github/screenshots/bank-switching-fixed.png)
+
+> Note: The `STA`, `STX`, and `STY` function can also cause control flow to change if the bank containing the currently-executing code is switched out. It would be good to document a workflow for how to handle this with Ghidra (possibly using the "Fallthrough" mechanism?)
+
 ## Installation
 
 1. Install a Compatible version of Java and Ghidra (Java 11+, tested with Ghidra 10.2.2).
