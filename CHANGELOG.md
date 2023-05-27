@@ -2,8 +2,17 @@
 
 ## [Unreleased]
 
+## [v20230527-10.3] - 2023-05-27
+### Added
+
+- Initial support for AxROM mapper (iNES mapper 7) ([#10](https://github.com/kylewlacy/GhidraNes/pull/10) by [@CBongo](https://github.com/CBongo))
+
+### Changed
+- Upgraded from Ghidra 10.2.2 to 10.3
+    - Updated help HTML to fix Gradle build when using Ghidra 10.3 ([#11](https://github.com/kylewlacy/GhidraNes/pull/11) by [@CBongo](https://github.com/CBongo))
+
 ## [v20221227-10.2.2] - 2022-12-27
-## Added
+### Added
 
 - Initial support for iNES mapper 19 ([#8](https://github.com/kylewlacy/GhidraNes/pull/8) by [@Notify-ctrl](https://github.com/Notify-ctrl))
 
@@ -26,7 +35,8 @@
 ### Added
 - Initial release, including support for iNES 1.0 ROMs with NROM mappers (mapper 0)
 
-[Unreleased]: https://github.com/kylewlacy/GhidraNes/compare/v20221227-10.2.2...HEAD
+[Unreleased]: https://github.com/kylewlacy/GhidraNes/compare/v20230527-10.3...HEAD
+[v20230527-10.3]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20230527-10.3
 [v20221227-10.2.2]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20221227-10.2.2
 [v20221127-10.2.2]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20221127-10.2.2
 [v20210802-10.0.1]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20210802-10.0.1
