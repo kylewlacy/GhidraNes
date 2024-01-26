@@ -40,5 +40,5 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Findcrypt_Ghidra_${{ matrix.ghidra }}
+        name: GhidraNes_Ghidra_${{ matrix.ghidra }}
         path: GhidraNes/dist/*.zip
