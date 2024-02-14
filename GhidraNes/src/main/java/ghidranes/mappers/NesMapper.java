@@ -21,6 +21,8 @@ public abstract class NesMapper {
 			return new MMC1Mapper();
 		case 7:
 			return new AxROMMapper();
+		case 10:
+			return new MMC4Mapper();
 		case 19:
 			return new Mapper019();
 		default:
