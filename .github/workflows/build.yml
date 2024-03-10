@@ -1,5 +1,5 @@
 name: Build
-on: [push, pull_request, workflow_dispatch]
+on: [push, workflow_dispatch]
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
     steps:
     - name: Clone Repository
       uses: actions/checkout@v4
-  
+
     - name: Install Java
       uses: actions/setup-java@v4
       with:
