@@ -36,17 +36,23 @@ jobs:
         version: ${{ matrix.ghidra }}
 
     - name: Build the extension for Ghidra ${{ matrix.ghidra }}
-      run: gradle -PGHIDRA_INSTALL_DIR=${{ env.GHIDRA_INSTALL_DIR }} -p GhidraNes
+      run: gradle -PGHIDRA_INSTALL_DIR=${GHIDRA_INSTALL_DIR} -p GhidraNes
 
     - name: Prepare artifact
       id: prepare
       run: |
-        (cd GhidraNes/dist && unzip *.zip)
-        echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-        echo "date=$(date -u +'%Y%m%d')" >> "$GITHUB_OUTPUT"
+        original_filename="$(cd GhidraNes/dist && ls *.zip | head -n1)"
+        artifact_name="ghidra_${GHIDRA_VERSION}_$(git rev-parse --short HEAD)_$(date -u +'%Y%m%d')_GhidraNes"
+
+        echo "Renaming $original_filename to ${artifact_name}.zip"
+        mv "GhidraNes/dist/$original_filename" "GhidraNes/dist/${artifact_name}.zip"
+
+        echo "artifact-path=GhidraNes/dist/${artifact_name}.zip" >> "$GITHUB_OUTPUT"
+      env:
+        GHIDRA_VERSION: ${{ matrix.ghidra }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ghidra_${{ matrix.ghidra }}_${{ steps.prepare.outputs.short_sha }}_${{ steps.prepare.outputs.date }}_GhidraNes
-        path: GhidraNes/dist/GhidraNes
+        name: GhidraNes_Ghidra_${{ matrix.ghidra }}
+        path: ${{ steps.prepare.outputs.artifact-path }}
