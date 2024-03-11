@@ -44,7 +44,8 @@
 ### Added
 - Initial release, including support for iNES 1.0 ROMs with NROM mappers (mapper 0)
 
-[Unreleased]: https://github.com/kylewlacy/GhidraNes/compare/v20230527-10.3...HEAD
+[Unreleased]: https://github.com/kylewlacy/GhidraNes/compare/v20240311...HEAD
+[v20240311]: https://github.com/kylewlacy/GhidraNes/compare/v20240311
 [v20230527-10.3]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20230527-10.3
 [v20221227-10.2.2]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20221227-10.2.2
 [v20221127-10.2.2]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20221127-10.2.2
