@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [v20240311] - 2024-03-11
+### Changed
+- Include multiple versions of Ghidra in the release (10.3 - 11.0.1). Thanks to [@antoniovazquezblanco](https://github.com/antoniovazquezblanco) for adding the CI pipeline to make this happen! ([#14](https://github.com/kylewlacy/GhidraNes/pull/14))
+
+### Added
+
+- Support for iNES mapper 2 / UxROM ([#13](https://github.com/kylewlacy/GhidraNes/pull/13) by [@victorsevero](https://github.com/victorsevero))
+- Support for iNES mapper 10 / MMC4 ([#15](https://github.com/kylewlacy/GhidraNes/pull/15) by [@rsgrava](https://github.com/rsgrava))
+
 ## [v20230527-10.3] - 2023-05-27
 ### Added
 
