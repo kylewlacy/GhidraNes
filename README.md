@@ -2,7 +2,7 @@
 
 A Ghidra extension to support disassembling and analyzing NES ROMs.
 
-![NES game disassembly](.github/screenshots/ghidra-nes.png)
+![Ghidra disassembly showing a decompiled function from a file named "game.nes"](.github/screenshots/ghidra-nes.png)
 
 ## Features
 
@@ -15,6 +15,23 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
     - [Namco 129/163](https://www.nesdev.org/wiki/INES_Mapper_019) (mapper 19)
 
 - Add labels and memory blocks in disassembly, making it easier to jump around a disassembled ROM!
+
+## Installation
+
+1. Install a Compatible version of Java and Ghidra (Java 11+).
+2. Download the latest [GhidraNes release](https://github.com/kylewlacy/GhidraNes/releases). Make sure the release you download matches your Ghidra version!
+3. Go to "File" > "Install Extensions...". Click "+" in the top-right corner and choose the GhidraNes Zip. Click "OK" to install the extension.
+4. Restart Ghidra.
+
+## Usage
+
+1. In Ghidra, create a new project by following the wizard under "File" > "New Project...".
+2. Drag-and-drop an iNES `.nes` ROM onto the project. Set the format to "NES ROM" and click "OK".
+3. Double-click the ROM in the project to open Ghidra's CodeBrowser.
+4. Analyze the file when prompted (or go to "Analysis" > "Auto Analyze..."). Leave the settings as default and click "Analyze".
+5. Done, the game will be disassembled! On the left-hand side, under "Symbol Tree" > "Functions", open `reset` to jump to the reset vector (where execution starts), or `vblank` to jump to the NMI vector (where execution goes during VBlank).
+
+## Notes
 
 ### Bank switching
 
@@ -34,22 +51,7 @@ The disassembly should now show a jump to the correct bank:
 
 ![Ghidra disassembly showing the same "reset" function, but the "JMP" instruction now goes to "(0xfffc)=>LAB_PRG0__ffaf"](.github/screenshots/bank-switching-fixed.png)
 
-> Note: The `STA`, `STX`, and `STY` function can also cause control flow to change if the bank containing the currently-executing code is switched out. It would be good to document a workflow for how to handle this with Ghidra (possibly using the "Fallthrough" mechanism?)
-
-## Installation
-
-1. Install a Compatible version of Java and Ghidra (Java 11+, tested with Ghidra 10.3).
-2. Download the latest [GhidraNes release](https://github.com/kylewlacy/GhidraNes/releases).
-3. Go to "File" > "Install Extensions...". Click "+" in the top-right corner and choose the GhidraNes Zip. Click "OK" to install the extension.
-4. Restart Ghidra.
-
-## Usage
-
-1. In Ghidra, create a new project by following the wizard under "File" > "New Project...".
-2. Drag-and-drop an iNES `.nes` ROM onto the project. Set the format to "NES ROM" and click "OK".
-3. Double-click the ROM in the project to open Ghidra's CodeBrowser.
-4. Analyze the file when prompted (or go to "Analysis" > "Auto Analyze..."). Leave the settings as default and click "Analyze".
-5. Done, the game will be disassembled! On the left-hand side, under "Symbol Tree" > "Functions", open `reset` to jump to the reset vector (where execution starts), or `vblank` to jump to the NMI vector (where execution goes during VBlank).
+> Note: The `STA`, `STX`, and `STY` instructions can also cause control flow to change if the bank containing the currently-executing code is switched out. It would be good to document a workflow for how to handle this with Ghidra (possibly using the "Fallthrough" mechanism?)
 
 ## Development
 
