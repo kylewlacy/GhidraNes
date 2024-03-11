@@ -1,0 +1,44 @@
+name: Build
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ghidra:
+          - "11.0"
+          - "10.4"
+          - "10.3.3"
+          - "10.3.2"
+          - "10.3.1"
+          - "10.3"
+
+    steps:
+    - name: Clone Repository
+      uses: actions/checkout@v4
+
+    - name: Install Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2.11.1
+
+    - name: Install Ghidra ${{ matrix.ghidra }}
+      uses: antoniovazquezblanco/setup-ghidra@v1.2.0
+      with:
+        auth_token: ${{ secrets.GITHUB_TOKEN }}
+        version: ${{ matrix.ghidra }}
+
+    - name: Build the extension for Ghidra ${{ matrix.ghidra }}
+      run: gradle -PGHIDRA_INSTALL_DIR=${{ env.GHIDRA_INSTALL_DIR }} -p GhidraNes
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: GhidraNes_Ghidra_${{ matrix.ghidra }}
+        path: GhidraNes/dist/*.zip
