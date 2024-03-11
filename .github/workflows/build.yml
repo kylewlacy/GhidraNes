@@ -8,6 +8,7 @@ jobs:
     strategy:
       matrix:
         ghidra:
+          - "11.0.1"
           - "11.0"
           - "10.4"
           - "10.3.3"
@@ -37,8 +38,15 @@ jobs:
     - name: Build the extension for Ghidra ${{ matrix.ghidra }}
       run: gradle -PGHIDRA_INSTALL_DIR=${{ env.GHIDRA_INSTALL_DIR }} -p GhidraNes
 
-    - name: Upload artifacts
+    - name: Prepare artifact
+      id: prepare
+      run: |
+        (cd GhidraNes/dist && unzip *.zip)
+        echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+        echo "date=$(date -u +'%Y%m%d')" >> "$GITHUB_OUTPUT"
+
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: GhidraNes_Ghidra_${{ matrix.ghidra }}
-        path: GhidraNes/dist/*.zip
+        name: ghidra_${{ matrix.ghidra }}_${{ steps.prepare.outputs.short_sha }}_${{ steps.prepare.outputs.date }}_GhidraNes
+        path: GhidraNes/dist/GhidraNes
