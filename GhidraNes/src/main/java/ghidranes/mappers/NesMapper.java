@@ -19,6 +19,8 @@ public abstract class NesMapper {
 			return new NromMapper();
 		case 1:
 			return new MMC1Mapper();
+		case 2:
+			return new UxROMMapper();
 		case 7:
 			return new AxROMMapper();
 		case 10:
