@@ -12,10 +12,10 @@ import ghidra.util.task.TaskMonitor;
 import ghidranes.NesRom;
 import ghidranes.util.MemoryBlockDescription;
 
-
 public class MMC4Mapper extends NesMapper {
 	@Override
 	public void updateMemoryMapForRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
+		// https://www.nesdev.org/wiki/MMC4
 		int sramPermissions = MemoryBlockDescription.READ | MemoryBlockDescription.WRITE | MemoryBlockDescription.EXECUTE;
 		MemoryBlockDescription.uninitialized(0x6000, 0x2000, "SRAM", sramPermissions, false).create(program);
 

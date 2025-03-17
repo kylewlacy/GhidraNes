@@ -4,6 +4,7 @@ import ghidra.framework.store.LockException;
 import ghidra.program.model.address.AddressOverflowException;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryConflictException;
+import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
@@ -14,6 +15,7 @@ public abstract class NesMapper {
 	public abstract void updateMemoryMapForRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException;
 
 	public static NesMapper getMapper(int mapperNum) throws UnimplementedNesMapperException {
+		//Msg.info("Orig", "Get mapper");
 		switch (mapperNum) {
 		case 0:
 			return new NromMapper();
@@ -21,7 +23,8 @@ public abstract class NesMapper {
 			return new MMC1Mapper();
 		case 2:
 			return new UxROMMapper();
-		case 3:
+		case 4:
+			//Msg.info("Orig", "MMC3 detected");
 			return new MMC3Mapper();
 		case 7:
 			return new AxROMMapper();

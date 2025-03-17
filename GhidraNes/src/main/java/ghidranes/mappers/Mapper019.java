@@ -17,6 +17,7 @@ import ghidranes.util.MemoryBlockDescription;
 
 public class Mapper019 extends NesMapper {
 	@Override
+	// https://www.nesdev.org/wiki/INES_Mapper_019
 	public void updateMemoryMapForRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
 		int sramPermissions =
 			MemoryBlockDescription.READ | MemoryBlockDescription.WRITE | MemoryBlockDescription.EXECUTE;
