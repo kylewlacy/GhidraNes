@@ -52,6 +52,7 @@ import ghidranes.util.NesMmio;
 /**
  * This loader parses an iNES ROM file and maps the PRG and CHR rom appropriately
  */
+
 public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 
 	@Override
