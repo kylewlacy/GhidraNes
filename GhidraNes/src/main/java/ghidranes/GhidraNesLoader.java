@@ -45,6 +45,7 @@ import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
 import ghidranes.errors.NesRomException;
 import ghidranes.errors.UnimplementedNesMapperException;
+import ghidranes.mappers.MMC3Mapper;
 import ghidranes.mappers.NesMapper;
 import ghidranes.util.MemoryBlockDescription;
 import ghidranes.util.NesMmio;
@@ -95,9 +96,9 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 		} catch (NesRomException e) {
 			throw new RuntimeException(e);
 		}
-
+		NesMapper mapper;
 		try {
-			NesMapper mapper = NesMapper.getMapper(rom.header.mapper);
+			mapper = NesMapper.getMapper(rom.header.mapper);
 			mapper.updateMemoryMapForRom(rom, program, monitor);
 		} catch (LockException | MemoryConflictException | AddressOverflowException | DuplicateNameException | UnimplementedNesMapperException e) {
 			throw new RuntimeException(e);
@@ -156,7 +157,7 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			nmiTargetSymbol.setPrimary();
 			resTargetSymbol.setPrimary();
 
-			NesMmio []registers = {
+			ArrayList<NesMmio> registersList = new ArrayList<NesMmio>(Arrays.asList(
 				new NesMmio(addressSpace, 0x2000, "PPUCTRL"),
 				new NesMmio(addressSpace, 0x2001, "PPUMASK"),
 				new NesMmio(addressSpace, 0x2002, "PPUSTATUS"),
@@ -186,8 +187,24 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 				new NesMmio(addressSpace, 0x4014, "OAMDMA"),
 				new NesMmio(addressSpace, 0x4015, "SND_CHN"),
 				new NesMmio(addressSpace, 0x4016, "JOY1"),
-				new NesMmio(addressSpace, 0x4017, "JOY2"),
-			};
+				new NesMmio(addressSpace, 0x4017, "JOY2")
+			));
+			
+			if (mapper instanceof MMC3Mapper) {
+				registersList.add(new NesMmio(addressSpace, 0x8000, "BANK_SELECT"));
+				registersList.add(new NesMmio(addressSpace, 0x8001, "BANK_DATA"));
+				registersList.add(new NesMmio(addressSpace, 0xA000, "MIRRORING"));
+				registersList.add(new NesMmio(addressSpace, 0xA001, "PRG_RAM_PROTECT"));
+				registersList.add(new NesMmio(addressSpace, 0xC000, "IRQ_LATCH"));
+				registersList.add(new NesMmio(addressSpace, 0xC001, "IRQ_RELOAD"));
+				registersList.add(new NesMmio(addressSpace, 0xE000, "IRQ_DISABLE"));
+				registersList.add(new NesMmio(addressSpace, 0XE001, "IRQ_ENABLE"));
+			}
+
+			NesMmio []registers = new NesMmio[registersList.size()];
+			registers = registersList.toArray(registers);
+			
+			
 			for (int i = 0; i < registers.length; i++) {
 				Symbol s = symbolTable.createLabel(registers[i].address, registers[i].name, SourceType.IMPORTED);
 				s.setPinned(true);
