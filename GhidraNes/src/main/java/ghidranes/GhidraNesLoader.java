@@ -53,7 +53,6 @@ import ghidranes.util.NesMmio;
 /**
  * This loader parses an iNES ROM file and maps the PRG and CHR rom appropriately
  */
-
 public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 
 	@Override
@@ -189,7 +188,7 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 				new NesMmio(addressSpace, 0x4016, "JOY1"),
 				new NesMmio(addressSpace, 0x4017, "JOY2")
 			));
-			
+
 			if (mapper instanceof MMC3Mapper) {
 				registersList.add(new NesMmio(addressSpace, 0x8000, "BANK_SELECT"));
 				registersList.add(new NesMmio(addressSpace, 0x8001, "BANK_DATA"));
@@ -203,8 +202,8 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 
 			NesMmio []registers = new NesMmio[registersList.size()];
 			registers = registersList.toArray(registers);
-			
-			
+
+
 			for (int i = 0; i < registers.length; i++) {
 				Symbol s = symbolTable.createLabel(registers[i].address, registers[i].name, SourceType.IMPORTED);
 				s.setPinned(true);
