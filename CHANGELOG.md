@@ -1,6 +1,11 @@
 # Changelog
 
-## [Unreleased]
+## [v20250329] - 2025-03-29
+### Changed
+- Included an extension build for Ghidra v11.3.1. All versions of Ghidra from the last release are still supported as well
+
+### Added
+- Support for iNES mapper 4 / MMC3 ([#19](https://github.com/kylewlacy/GhidraNes/pull/19) by [@GrasonHumphrey](https://github.com/GrasonHumphrey))
 
 ## [v20240311] - 2024-03-11
 ### Changed
@@ -44,7 +49,8 @@
 ### Added
 - Initial release, including support for iNES 1.0 ROMs with NROM mappers (mapper 0)
 
-[Unreleased]: https://github.com/kylewlacy/GhidraNes/compare/v20240311...HEAD
+[Unreleased]: https://github.com/kylewlacy/GhidraNes/compare/v20250329...HEAD
+[v20250329]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20250329
 [v20240311]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20240311
 [v20230527-10.3]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20230527-10.3
 [v20221227-10.2.2]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20221227-10.2.2
