@@ -1,17 +1,25 @@
 package ghidranes.mappers;
 
+import java.util.ArrayList;
+
 import ghidra.framework.store.LockException;
 import ghidra.program.model.address.AddressOverflowException;
+import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryConflictException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
 import ghidranes.NesRom;
+import ghidranes.util.NesMmio;
 import ghidranes.errors.UnimplementedNesMapperException;
 
 public abstract class NesMapper {
 	public abstract void updateMemoryMapForRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException;
+
+	public void addExtraRegisters(ArrayList<NesMmio> registers, AddressSpace addressSpace) {
+		// Can be overridden to add additional mapper-specific registers
+	}
 
 	public static NesMapper getMapper(int mapperNum) throws UnimplementedNesMapperException {
 		switch (mapperNum) {

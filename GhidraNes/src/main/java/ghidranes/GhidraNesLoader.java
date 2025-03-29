@@ -156,7 +156,7 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			nmiTargetSymbol.setPrimary();
 			resTargetSymbol.setPrimary();
 
-			ArrayList<NesMmio> registersList = new ArrayList<NesMmio>(Arrays.asList(
+			ArrayList<NesMmio> registers = new ArrayList<NesMmio>(Arrays.asList(
 				new NesMmio(addressSpace, 0x2000, "PPUCTRL"),
 				new NesMmio(addressSpace, 0x2001, "PPUMASK"),
 				new NesMmio(addressSpace, 0x2002, "PPUSTATUS"),
@@ -189,26 +189,12 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 				new NesMmio(addressSpace, 0x4017, "JOY2")
 			));
 
-			if (mapper instanceof MMC3Mapper) {
-				registersList.add(new NesMmio(addressSpace, 0x8000, "BANK_SELECT"));
-				registersList.add(new NesMmio(addressSpace, 0x8001, "BANK_DATA"));
-				registersList.add(new NesMmio(addressSpace, 0xA000, "MIRRORING"));
-				registersList.add(new NesMmio(addressSpace, 0xA001, "PRG_RAM_PROTECT"));
-				registersList.add(new NesMmio(addressSpace, 0xC000, "IRQ_LATCH"));
-				registersList.add(new NesMmio(addressSpace, 0xC001, "IRQ_RELOAD"));
-				registersList.add(new NesMmio(addressSpace, 0xE000, "IRQ_DISABLE"));
-				registersList.add(new NesMmio(addressSpace, 0XE001, "IRQ_ENABLE"));
-			}
+			mapper.addExtraRegisters(registers, addressSpace);
 
-			NesMmio []registers = new NesMmio[registersList.size()];
-			registers = registersList.toArray(registers);
-
-
-			for (int i = 0; i < registers.length; i++) {
-				Symbol s = symbolTable.createLabel(registers[i].address, registers[i].name, SourceType.IMPORTED);
+			for (NesMmio register : registers) {
+				Symbol s = symbolTable.createLabel(register.address, register.name, SourceType.IMPORTED);
 				s.setPinned(true);
 			}
-
 		} catch (InvalidInputException | AddressOutOfBoundsException | MemoryAccessException e) {
 			throw new RuntimeException(e);
 		}
