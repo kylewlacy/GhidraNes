@@ -27,10 +27,10 @@ jobs:
         java-version: '21'
 
     - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2.11.1
+      uses: gradle/actions/setup-gradle@v4
 
     - name: Install Ghidra ${{ matrix.ghidra }}
-      uses: antoniovazquezblanco/setup-ghidra@v1.2.0
+      uses: antoniovazquezblanco/setup-ghidra@v2.0.10
       with:
         auth_token: ${{ secrets.GITHUB_TOKEN }}
         version: ${{ matrix.ghidra }}
