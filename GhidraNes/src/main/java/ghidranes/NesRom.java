@@ -8,7 +8,7 @@ public class NesRom {
 	public NesRomHeader header;
 	byte[] trainerBytes;
 	public byte[] prgRom;
-	byte[] chrRom;
+	public byte[] chrRom;
 
 	public NesRom(NesRomHeader romHeader, InputStream bytes) throws NesRomEofException, IOException {
 		if (romHeader.hasTrainer) {
