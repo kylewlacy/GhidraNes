@@ -62,6 +62,16 @@ public class MMC3Mapper extends NesMapper {
 		//CPU $E000-$FFFF: 8 KB PRG ROM bank, fixed to the last bank
 		MemoryBlockDescription.initialized(0xE000, 0x2000, "PRG" + bank + "_FIXED2", romPermissions, rombankBytes, false, monitor)
 			.create(program);
+		
+		// Make CHR ROM banks
+		if (rom.chrRom.length > 0) {
+			bank = 0;
+			for (bank = 0; (bank * 0x400) < rom.chrRom.length; bank ++) {
+				byte[] chrROMBankBytes = Arrays.copyOfRange(rom.chrRom, bank*0x400, (bank+1)*0x400);
+				MemoryBlockDescription.initialized(0x0, 0x400, "CHR" + bank, romPermissions, chrROMBankBytes, true, monitor)
+				.create(program);
+			}
+		}
 	}
 
 
