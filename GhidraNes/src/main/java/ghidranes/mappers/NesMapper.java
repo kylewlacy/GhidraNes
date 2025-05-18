@@ -25,13 +25,13 @@ public abstract class NesMapper {
 		switch (mapperNum) {
 		case 0:
 			return new NromMapper();
-		case 1:
+		case 1,16:
 			return new MMC1Mapper();
 		case 2:
 			return new UxROMMapper();
 		case 4:
 			return new MMC3Mapper();
-		case 7:
+		case 7,66:
 			return new AxROMMapper();
 		case 10:
 			return new MMC4Mapper();
