@@ -1,14 +1,18 @@
 name: Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: write
 
 jobs:
   build:
     uses: ./.github/workflows/_build.yml
 
-  upload-release-assets:
+  create-draft-release:
     name: Upload release assets
     runs-on: ubuntu-latest
     steps:
@@ -17,9 +21,16 @@ jobs:
         with:
           merge-multiple: true
 
-      - name: Upload assets for release
-        run: |
-          gh release upload -R "$gh_repo" "$gh_tag" ghidra_*_GhidraNes.zip
+      - name: Create draft release
         env:
-          gh_repo: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           gh_tag: ${{ github.ref_name }}
+        run:
+          gh release create "$gh_tag" \
+            --repo="$GITHUB_REPOSITORY"
+            --draft \
+            --generate-notes
+
+          gh release upload "$gh_tag" \
+            --repo="$GITHUB_REPOSITORY" \
+            ghidra_*_GhidraNes.zip
