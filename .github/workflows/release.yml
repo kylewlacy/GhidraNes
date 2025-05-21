@@ -14,6 +14,7 @@ jobs:
 
   create-draft-release:
     name: Upload release assets
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
