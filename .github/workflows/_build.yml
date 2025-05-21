@@ -1,10 +1,12 @@
-name: Build
-on: [push, pull_request, workflow_dispatch]
+name: "[Build]"
+
+on:
+  workflow_call:
 
 jobs:
   build:
+    name: Build (Ghidra ${{ matrix.ghidra }})
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         ghidra:
@@ -58,11 +60,3 @@ jobs:
       with:
         name: GhidraNes_Ghidra_${{ matrix.ghidra }}
         path: ${{ steps.prepare.outputs.artifact-path }}
-
-  # Extra job that succeeds when all build jobs succeed (useful for PR requirements)
-  all-passed:
-    name: All passed
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - run: ':'
