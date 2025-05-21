@@ -13,7 +13,7 @@ jobs:
     uses: ./.github/workflows/_build.yml
 
   create-draft-release:
-    name: Upload release assets
+    name: Create draft release
     needs: [build]
     runs-on: ubuntu-latest
     steps:
