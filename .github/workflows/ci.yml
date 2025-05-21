@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    tags-ignore: "*" # Ignore all tag pushes
   pull_request:
 
 jobs:
