@@ -58,3 +58,11 @@ jobs:
       with:
         name: GhidraNes_Ghidra_${{ matrix.ghidra }}
         path: ${{ steps.prepare.outputs.artifact-path }}
+
+  # Extra job that succeeds when all build jobs succeed (useful for PR requirements)
+  all-passed:
+    name: All passed
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - run: ':'
