@@ -14,7 +14,7 @@ import ghidranes.util.MemoryBlockDescription;
 
 public class NromMapper extends NesMapper {
 	@Override
-	public void updateMemoryMapForRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
+	public void mapRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
 		// TODO: Do we always want to include work RAM?
 		int sramPermissions =
 			MemoryBlockDescription.READ | MemoryBlockDescription.WRITE | MemoryBlockDescription.EXECUTE;

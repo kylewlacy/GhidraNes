@@ -1,7 +1,7 @@
 package ghidranes.mappers;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import ghidra.framework.store.LockException;
 import ghidra.program.model.address.AddressOverflowException;
@@ -12,12 +12,12 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
 import ghidranes.NesRom;
-import ghidranes.util.NesMmio;
 import ghidranes.util.MemoryBlockDescription;
+import ghidranes.util.NesMmio;
 
 public class MMC3Mapper extends NesMapper {
 	@Override
-	public void updateMemoryMapForRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
+	protected void mapRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
 		/*
 		https://www.nesdev.org/wiki/MMC3
 		CPU $6000-$7FFF: 8 KB PRG RAM bank (optional)
@@ -74,9 +74,9 @@ public class MMC3Mapper extends NesMapper {
 		}
 	}
 
-
 	@Override
-	public void addExtraRegisters(ArrayList<NesMmio> registers, AddressSpace addressSpace) {
+	protected ArrayList<NesMmio> getRegisters(AddressSpace addressSpace) {
+		ArrayList<NesMmio> registers = super.getRegisters(addressSpace);
 		registers.add(new NesMmio(addressSpace, 0x8000, "BANK_SELECT"));
 		registers.add(new NesMmio(addressSpace, 0x8001, "BANK_DATA"));
 		registers.add(new NesMmio(addressSpace, 0xA000, "MIRRORING"));
@@ -85,5 +85,6 @@ public class MMC3Mapper extends NesMapper {
 		registers.add(new NesMmio(addressSpace, 0xC001, "IRQ_RELOAD"));
 		registers.add(new NesMmio(addressSpace, 0xE000, "IRQ_DISABLE"));
 		registers.add(new NesMmio(addressSpace, 0XE001, "IRQ_ENABLE"));
+		return registers;
 	}
 }
