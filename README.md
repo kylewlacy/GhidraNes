@@ -87,3 +87,10 @@ The disassembly should now show a jump to the correct bank:
 2. Run `gradle buildExtension`
     - If the `gradle.properties` file hasn't been set up, properties can be passed to Gradle directly, e.g. `gradle buildExtension -PGHIDRA_INSTALL_DIR=/home/user/ghidra_10.2.2_PUBLIC`
 3. The built zip file will be saved in the `GhidraNes/dist/` directory. See the "Installation" section for details on installing the built zip.
+
+## Publishing a release
+
+1. Update `CHANGELOG.md` as a new commit
+2. Create a tag for the new release. The tag and release name should be named `vYYYYMMDD` based on the current date [in UTC](https://www.utctime.net/) (e.g. `v20250520`)
+3. Push the tag. This will trigger the ["Release" GH Actions workflow](https://github.com/kylewlacy/GhidraNes/actions/workflows/release.yml), which will create a new [draft release](https://github.com/kylewlacy/GhidraNes/releases) with release notes and build assets after a few minutes
+4. Double-check that the build assets look good, adjust or add to the release notes if needed, and publish!
