@@ -22,16 +22,10 @@ jobs:
         with:
           merge-multiple: true
 
-      - name: Create draft release
+      - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           gh_tag: ${{ github.ref_name }}
-        run:
-          gh release create "$gh_tag" \
-            --repo="$GITHUB_REPOSITORY"
-            --draft \
-            --generate-notes
-
-          gh release upload "$gh_tag" \
-            --repo="$GITHUB_REPOSITORY" \
-            ghidra_*_GhidraNes.zip
+        run: |
+          gh release create "$gh_tag" --repo="$GITHUB_REPOSITORY" --draft --generate-notes
+          gh release upload "$gh_tag" --repo="$GITHUB_REPOSITORY" ghidra_*_GhidraNes.zip
