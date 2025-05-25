@@ -1,0 +1,18 @@
+name: CI
+
+on:
+  push:
+    tags-ignore: "*" # Ignore all tag pushes
+  pull_request:
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build.yml
+
+  # Extra job that succeeds when all build jobs succeed (useful for PR requirements)
+  all-passed:
+    name: All passed
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - run: ':'

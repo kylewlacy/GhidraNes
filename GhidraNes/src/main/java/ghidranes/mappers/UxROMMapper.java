@@ -14,7 +14,7 @@ import ghidranes.util.MemoryBlockDescription;
 
 public class UxROMMapper extends NesMapper {
     @Override
-    public void updateMemoryMapForRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
+    public void mapRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
 
         /* UxROM has switchable 16k PRG ROM banks mapped at 8000-FFFF.
            The lower bank (fixed at 8000-BFFF) is typically the first bank, and 

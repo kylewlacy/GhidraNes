@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build.yml
+
+  create-draft-release:
+    name: Create draft release
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          gh_tag: ${{ github.ref_name }}
+        run: |
+          gh release create "$gh_tag" --repo="$GITHUB_REPOSITORY" --draft --generate-notes
+          gh release upload "$gh_tag" --repo="$GITHUB_REPOSITORY" ghidra_*_GhidraNes.zip

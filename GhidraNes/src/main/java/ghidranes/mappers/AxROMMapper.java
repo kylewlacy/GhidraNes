@@ -14,7 +14,7 @@ import ghidranes.util.MemoryBlockDescription;
 
 public class AxROMMapper extends NesMapper {
 	@Override
-	public void updateMemoryMapForRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
+	public void mapRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
 
 		/* AxROM contains 32k selectable PRG ROM banks mapped to 8000-FFFF.
 		   Assumes last bank is active at initial startup (so no overlay flag). */
