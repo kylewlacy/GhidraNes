@@ -28,6 +28,6 @@ if (ghidraInstallDir) {
 	apply from: new File(ghidraInstallDir).getCanonicalPath() + "/support/buildExtension.gradle"
 }
 else {
-	throw new GradleException("GHIDRA_INSTALL_DIR is not defined!")
+	throw GradleException("GHIDRA_INSTALL_DIR is not defined!")
 }
 //----------------------END "DO NOT MODIFY" SECTION-------------------------------
