@@ -39,7 +39,7 @@ public abstract class NesMapper {
 		case 0:
 			mapper = new NromMapper();
 			break;
-		case 1:
+		case 1,16:
 			mapper = new MMC1Mapper();
 			break;
 		case 2:
@@ -48,7 +48,7 @@ public abstract class NesMapper {
 		case 4:
 			mapper = new MMC3Mapper();
 			break;
-		case 7:
+		case 7,66:
 			mapper = new AxROMMapper();
 			break;
 		case 10:
