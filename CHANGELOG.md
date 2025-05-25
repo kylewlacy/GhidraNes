@@ -1,5 +1,13 @@
 # Changelog
 
+## [v20250525] - 2025-05-25
+### Changed
+- Added CHR ROM extraction to MMC3 mapper ([#20](https://github.com/kylewlacy/GhidraNes/pull/20) by [@GrasonHumphrey](https://github.com/GrasonHumphrey))
+- Updated release build to add Ghidra v11.3.2 ([#23](https://github.com/kylewlacy/GhidraNes/pull/23))
+- Some refactoring from [@CBongo](https://github.com/CBongo) ([#22](https://github.com/kylewlacy/GhidraNes/pull/22),[#25](https://github.com/kylewlacy/GhidraNes/pull/25))
+- Added and documented automated release building workflow
+- Add support for mapper 16 and 66 ([#24](https://github.com/kylewlacy/GhidraNes/pull/24) by [@CBongo](https://github.com/CBongo)), fixes [#18](https://github.com/kylewlacy/GhidraNes/issues/18)
+
 ## [v20250329] - 2025-03-29
 ### Changed
 - Included an extension build for Ghidra v11.3.1. All versions of Ghidra from the last release are still supported as well
@@ -50,6 +58,7 @@
 - Initial release, including support for iNES 1.0 ROMs with NROM mappers (mapper 0)
 
 [Unreleased]: https://github.com/kylewlacy/GhidraNes/compare/v20250329...HEAD
+[v20250525]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20250525
 [v20250329]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20250329
 [v20240311]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20240311
 [v20230527-10.3]: https://github.com/kylewlacy/GhidraNes/releases/tag/v20230527-10.3
