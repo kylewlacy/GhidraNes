@@ -22,9 +22,10 @@ import java.util.Collection;
 import java.util.List;
 
 import ghidra.app.util.Option;
+import ghidra.app.util.OptionUtils;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.importer.MessageLog;
-import ghidra.app.util.opinion.AbstractLibrarySupportLoader;
+import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.model.DomainObject;
 import ghidra.framework.store.LockException;
@@ -37,19 +38,30 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
+import ghidranes.errors.InvalidNesRomHeaderException;
 import ghidranes.errors.NesRomException;
 import ghidranes.errors.UnimplementedNesMapperException;
-import ghidranes.mappers.NesMapper;
 import ghidranes.util.MemoryBlockDescription;
 
 /**
  * This loader parses an iNES ROM file and maps the PRG and CHR rom appropriately
  */
-public class GhidraNesLoader extends AbstractLibrarySupportLoader {
+public class GhidraNesLoader extends AbstractProgramWrapperLoader {
+
+	public static final String LOADER_NAME = "NES ROM";
+
+	private static final String OPTION_NAME_MIRROR = "Create mirror blocks for RAM and IO";
+	private static final Boolean OPTION_DEFAULT_MIRROR = true;
+
+	// in theory you could (should?)"rebuild" the rom object in the methods that need
+	// it from the ByteProvider instead of using a local variable here
+	protected NesRom rom;
+
+	private Boolean wantMirrors = OPTION_DEFAULT_MIRROR;
 
 	@Override
 	public String getName() {
-		return "NES ROM";
+		return LOADER_NAME;
 	}
 
 	@Override
@@ -60,7 +72,7 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 
 		try {
 			// Try to parse the ROM header (will throw an exception if parsing fails)
-			new NesRomHeader(bytes);
+			rom = new NesRom(bytes);
 
 			// If successful, add the load spec
 			LanguageCompilerSpecPair languageCompilerSpecPair = new LanguageCompilerSpecPair("6502:LE:16:default", "default");
@@ -70,7 +82,6 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 		catch (NesRomException e) {
 			// If parsing failed, do not add the load spec
 		}
-
 		return loadSpecs;
 	}
 
@@ -78,21 +89,32 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
 			Program program, TaskMonitor monitor, MessageLog log)
 			throws CancelledException, IOException {
-		InputStream bytes = provider.getInputStream(0);
 
+		// have to stash a local copy of the mirror option cause
+		// createDefaultMemoryBlocks() doesn't have access the load options
+		wantMirrors = shouldCreateMirrors(options);
+
+		InputStream bytes = provider.getInputStream(0);
 		NesRom rom;
+
 		try {
-			NesRomHeader header = new NesRomHeader(bytes);
-			rom = new NesRom(header, bytes);
+			rom = new NesRom(bytes);
 		} catch (NesRomException e) {
 			throw new RuntimeException(e);
 		}
-		NesMapper mapper;
+
 		try {
-			mapper = NesMapper.getMapper(rom.header.mapper);
-			mapper.apply(rom, program, monitor);
+			// create base ROM bank to overlay banks
+			int romPermissions =
+				MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
+			MemoryBlockDescription.uninitialized(0x8000, 0x8000, "PRG_ROM", romPermissions, false)
+				.create(program);
+			
+			// map the banks
+			rom.applyMapper(program, monitor, options);
 		} catch (LockException | MemoryConflictException | AddressOverflowException
-				 | DuplicateNameException | InvalidInputException | UnimplementedNesMapperException e) {
+				 | DuplicateNameException | InvalidInputException | UnimplementedNesMapperException
+				 | InvalidNesRomHeaderException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -102,6 +124,12 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			DomainObject domainObject, boolean isLoadIntoProgram) {
 		List<Option> list =
 			super.getDefaultOptions(provider, loadSpec, domainObject, isLoadIntoProgram);
+
+		// general options
+		list.add(new Option(OPTION_NAME_MIRROR, OPTION_DEFAULT_MIRROR));
+
+		// identify ROM-specific options based on NES header info
+		list.addAll(rom.getLoadOptions());
 
 		return list;
 	}
@@ -116,6 +144,7 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 		// NOTE: We skip the default memory blocks because Ghidra's default 6502 memory map
 		// differs from the NES's memory map
 		//		super.createDefaultMemoryBlocks(program, language, log);
+		// TODO: consider creating an NES "language" with the correct memory map
 
 		try {
 			int ramPermissions =
@@ -128,36 +157,38 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 			// TODO: Refactor mirrored sections!
 			MemoryBlockDescription.uninitialized(0x0000, 0x0800, "RAM", ramPermissions, false)
 				.create(program);
-			MemoryBlockDescription.byteMapped(0x0800, 0x0800, "RAM_MIRROR_1", ramPermissions, 0x0000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x1000, 0x0800, "RAM_MIRROR_2", ramPermissions, 0x0000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x1800, 0x0800, "RAM_MIRROR_3", ramPermissions, 0x0000)
-				.create(program);
-
+			if (wantMirrors) {
+				MemoryBlockDescription.byteMapped(0x0800, 0x0800, "RAM_MIRROR_1", ramPermissions, 0x0000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x1000, 0x0800, "RAM_MIRROR_2", ramPermissions, 0x0000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x1800, 0x0800, "RAM_MIRROR_3", ramPermissions, 0x0000)
+					.create(program);
+			}
 			MemoryBlockDescription.uninitialized(0x2000, 0x0008, "PPU", ppuPermissions, false)
 				.create(program);
-			MemoryBlockDescription.byteMapped(0x2008, 0x0008, "PPU_MIRROR_1", ppuPermissions, 0x2000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x2010, 0x0010, "PPU_MIRROR_2", ppuPermissions, 0x2000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x2020, 0x0020, "PPU_MIRROR_3", ppuPermissions, 0x2000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x2040, 0x0040, "PPU_MIRROR_4", ppuPermissions, 0x2000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x2080, 0x0080, "PPU_MIRROR_5", ppuPermissions, 0x2000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x2100, 0x0100, "PPU_MIRROR_6", ppuPermissions, 0x2000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x2200, 0x0200, "PPU_MIRROR_7", ppuPermissions, 0x2000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x2400, 0x0400, "PPU_MIRROR_8", ppuPermissions, 0x2000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x2800, 0x0800, "PPU_MIRROR_9", ppuPermissions, 0x2000)
-				.create(program);
-			MemoryBlockDescription.byteMapped(0x3000, 0x1000, "PPU_MIRROR_10", ppuPermissions, 0x2000)
-				.create(program);
-
+			if (wantMirrors) {
+				MemoryBlockDescription.byteMapped(0x2008, 0x0008, "PPU_MIRROR_1", ppuPermissions, 0x2000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x2010, 0x0010, "PPU_MIRROR_2", ppuPermissions, 0x2000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x2020, 0x0020, "PPU_MIRROR_3", ppuPermissions, 0x2000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x2040, 0x0040, "PPU_MIRROR_4", ppuPermissions, 0x2000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x2080, 0x0080, "PPU_MIRROR_5", ppuPermissions, 0x2000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x2100, 0x0100, "PPU_MIRROR_6", ppuPermissions, 0x2000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x2200, 0x0200, "PPU_MIRROR_7", ppuPermissions, 0x2000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x2400, 0x0400, "PPU_MIRROR_8", ppuPermissions, 0x2000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x2800, 0x0800, "PPU_MIRROR_9", ppuPermissions, 0x2000)
+					.create(program);
+				MemoryBlockDescription.byteMapped(0x3000, 0x1000, "PPU_MIRROR_10", ppuPermissions, 0x2000)
+					.create(program);
+			}
 			MemoryBlockDescription.uninitialized(0x4000, 0x0018, "APU_IO", apuIoPermissions, false)
 				.create(program);
 		} catch (LockException e) {
@@ -171,5 +202,9 @@ public class GhidraNesLoader extends AbstractLibrarySupportLoader {
 		} catch (CancelledException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	protected Boolean shouldCreateMirrors(List<Option> options) {
+		return OptionUtils.getBooleanOptionValue(OPTION_NAME_MIRROR, options, OPTION_DEFAULT_MIRROR);
 	}
 }

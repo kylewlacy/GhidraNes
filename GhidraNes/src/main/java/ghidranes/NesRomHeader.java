@@ -106,27 +106,27 @@ public class NesRomHeader {
 		}
 	}
 
-	int getPrgRomSizeBytes() {
-		return this.prgRamSizeBytes;
+	public int getPrgRomSizeBytes() {
+		return this.prgRomSizeBytes;
 	}
 
-	int getChrRomSizeBytes() {
+	public int getChrRomSizeBytes() {
 		return this.chrRomSizeBytes;
 	}
 
-	int getPrgRamSizeBytes() {
+	public int getPrgRamSizeBytes() {
 		return this.prgRamSizeBytes;
 	}
 
-	boolean getHasPersistence() {
+	public boolean getHasPersistence() {
 		return this.hasPersistence;
 	}
 
-	boolean getHasTrainer() {
+	public boolean getHasTrainer() {
 		return this.hasTrainer;
 	}
 
-	int getMapper() {
+	public int getMapper() {
 		return this.mapper;
 	}
 }

@@ -7,13 +7,30 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
 ## Features
 
 - Import NES ROMs in the iNES format. The following mappers are supported:
-    - [NROM](https://www.nesdev.org/wiki/NROM) (mapper 0)
-    - [MMC1](https://www.nesdev.org/wiki/MMC1) (mapper 1, also includes mapper 16)
-    - [UxROM](https://www.nesdev.org/wiki/UxROM) (mapper 2)
-    - [MMC3](https://www.nesdev.org/wiki/MMC3) (mapper 4)
-    - [AxROM](https://www.nesdev.org/wiki/AxROM) (mapper 7, also includes mapper 66)
-    - [MMC4](https://www.nesdev.org/wiki/MMC4) (mapper 10)
-    - [Namco 129/163](https://www.nesdev.org/wiki/INES_Mapper_019) (mapper 19)
+    - 16K/32K fixed PRG ROM
+        - [NROM](https://www.nesdev.org/wiki/NROM) (mapper 0)
+        - [CNROM](https://www.nesdev.org/wiki/CNROM) (mappers 3, 185)
+        - [CPROM](https://www.nesdev.org/wiki/CPROM) (mapper 13)
+    - 16K bankable PRG ROM
+        - [MMC1/SxROM](https://www.nesdev.org/wiki/MMC1) (mapper 1, also includes mapper 16)
+        - [UxROM] (https://www.nesdev.org/wiki/UxROM) (mapper 2)
+        - [MMC4/FxROM](https://www.nesdev.org/wiki/MMC4) (mapper 10)
+        - [UNROM 512](https://www.nesdev.org/wiki/UNROM_512) (mapper 30)
+        - [Sunsoft 3](https://www.nesdev.org/wiki/INES_Mapper_067)/[Sunsoft 4](https://www.nesdev.org/wiki/INES_Mapper_068) (mappers 67, 68)
+        - Misc mapper [16](https://www.nesdev.org/wiki/INES_Mapper_016)
+    - 32K bankable PRG ROM
+        - [AxROM](https://www.nesdev.org/wiki/AxROM) (mapper 7)
+        - [BNROM/NINA](https://www.nesdev.org/wiki/INES_Mapper_034) (mapper 34)
+        - [GxROM](https://www.nesdev.org/wiki/GxROM) (mapper 66)
+        - Misc mappers [11](https://www.nesdev.org/wiki/Color_Dreams), [38](https://www.nesdev.org/wiki/INES_Mapper_038), [140](https://www.nesdev.org/wiki/INES_Mapper_140)
+    - 8K bankable PRG ROM
+        - [MMC3/TxROM](https://www.nesdev.org/wiki/MMC3)/[TxSROM](https://www.nesdev.org/wiki/INES_Mapper_118)/[TQROM](https://www.nesdev.org/wiki/INES_Mapper_119) (mappers 4, 118, 119)
+        - [Namco 129/163](https://www.nesdev.org/wiki/INES_Mapper_019) (mapper 19)
+        - [Konami VRC2/4](https://www.nesdev.org/wiki/VRC2_and_VRC4) (mappers 21, 22, 23, 25)
+        - [RAMBO-1](https://www.nesdev.org/wiki/RAMBO-1) (mappers 64, 158)
+        - [Sunsoft FME-7/5A/5B](https://www.nesdev.org/wiki/Sunsoft_FME-7) (mapper 69)
+        - [DxROM](https://www.nesdev.org/wiki/DxROM) (mapper [206](https://www.nesdev.org/wiki/INES_Mapper_206))
+        - Misc mappers [18](https://www.nesdev.org/wiki/INES_Mapper_018), [65](https://www.nesdev.org/wiki/INES_Mapper_065), [74](https://www.nesdev.org/wiki/INES_Mapper_074), [76](https://www.nesdev.org/wiki/INES_Mapper_076), [88](https://www.nesdev.org/wiki/INES_Mapper_088), [95](https://www.nesdev.org/wiki/INES_Mapper_095), [154](https://www.nesdev.org/wiki/INES_Mapper_154), [191](https://www.nesdev.org/wiki/INES_Mapper_191), [192](https://www.nesdev.org/wiki/INES_Mapper_192), [194](https://www.nesdev.org/wiki/INES_Mapper_194), [195](https://www.nesdev.org/wiki/INES_Mapper_195)
 
 - Add labels and memory blocks in disassembly, making it easier to jump around a disassembled ROM!
 
@@ -52,7 +69,23 @@ The disassembly should now show a jump to the correct bank:
 
 ![Ghidra disassembly showing the same "reset" function, but the "JMP" instruction now goes to "(0xfffc)=>LAB_PRG0__ffaf"](.github/screenshots/bank-switching-fixed.png)
 
-> Note: The `STA`, `STX`, and `STY` instructions can also cause control flow to change if the bank containing the currently-executing code is switched out. It would be good to document a workflow for how to handle this with Ghidra (possibly using the "Fallthrough" mechanism?)
+> Note: Any write instruction (e.g. `STA`/`STX`/'STY', `INC`/`DEC`) to a mapper register will cause control flow to change if the bank containing the currently-executing code is switched out. To fix these:
+>
+> 1. Right-click the write instruction
+> 2. Choose `Fallthrough`>`Set...`
+> 3. Remember the value in the address offset box
+> 4. Select `User`, and choose the new bank from the dropdown.
+> 5.  Set the address offset box to the value from step 3 (since the PC will still be the "next" instruction in the new bank).
+>
+>This should help with analysis and decompilation so they can "follow" the bank switch.
+
+By default, ROMs with PRG block sizes of less than 32K are created with a base address of `0x8000` except for the last bank, which will be at the "highest" address for that bank (8K blocks will be at `0xe000`, 16K at `0xc000`).  You can use the `Options...` dialog at load time to set each bank's address if you know in advance where each bank should be.  If you later determine that the guess was wrong and you don't want to re-import the ROM, you can re-base the bank using the Memory Map window:
+
+1. Select menu `Window`>`Memory Map` if you don't have it open already.
+2. Select the row with the bank you want to change.
+3. Select the blue cross icon ("Move a block to another address") in the title bar of the Memory Map window.
+4. Change the "New Start Address" to the correct base address.  The "New End Address" should automatically update for you based on the block size.
+5. Select "OK" and the bank will be updated.
 
 ## Development
 
