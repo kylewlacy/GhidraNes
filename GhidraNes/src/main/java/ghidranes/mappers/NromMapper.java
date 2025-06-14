@@ -6,40 +6,56 @@ import ghidra.framework.store.LockException;
 import ghidra.program.model.address.AddressOverflowException;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryConflictException;
+import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
 import ghidranes.NesRom;
+import ghidranes.util.Bank;
 import ghidranes.util.MemoryBlockDescription;
 
 public class NromMapper extends NesMapper {
 	@Override
-	public void mapRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
+	public void mapPrgRom(NesRom rom, Program program, TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
 		// TODO: Do we always want to include work RAM?
 		int sramPermissions =
 			MemoryBlockDescription.READ | MemoryBlockDescription.WRITE | MemoryBlockDescription.EXECUTE;
 		MemoryBlockDescription.uninitialized(0x6000, 0x2000, "SRAM", sramPermissions, false)
 			.create(program);
 
-		// TODO: Do we need all this? It appears no NROM games have anything besides 16K or 32K, so we will only ever need to create one mirror
-		for (int romMirror = 0; romMirror * rom.prgRom.length < 0x8000; romMirror++) {
-			int romMirrorOffsetStart = romMirror * rom.prgRom.length;
-			int romMirrorLength = Math.min(rom.prgRom.length, 0x8000);
+		int prgRomSize = rom.prgRom.length;
+		if (prgRomSize > 0x8000) {
+			Msg.warn("NromMapper", "PRG ROM size is larger than 32k, truncating to 32k");
+			prgRomSize = 0x8000;
+		}
 
-			int romMirrorStart = romMirrorOffsetStart + 0x8000;
-			int romPermissions =
-					MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
+		// how many mirrors should we make?
+		// common case is 1 (for 32k PRG ROM) or 2 (for 16k PRG ROM)
+		int bankCount = 0x8000 / prgRomSize;
+		String basename = Bank.getPrgBankName(0,2);
+		byte[] rombankBytes;
 
-			if (romMirror == 0) {
-				byte[] romBytes = Arrays.copyOfRange(rom.prgRom, 0, romMirrorLength);
-				MemoryBlockDescription.initialized(romMirrorStart, romMirrorLength, "PRG_ROM", romPermissions, romBytes, false, monitor)
-					.create(program);
-			}
-			else {
-				MemoryBlockDescription.byteMapped(romMirrorStart, romMirrorLength, "PRG_ROM_MIRROR_" + romMirror, romPermissions, 0x8000)
-					.create(program);
-			}
+		if (bankCount > 1) {
+			// 16k * 2 banks
+			rombankBytes = Arrays.copyOfRange(rom.prgRom, 0, 0x4000);
+			// map first bank at 0xc000 (since vectors need to be at 0xfffx, consider this "primary")
+			makeNromPrgBank(program, basename, 0xc000, rombankBytes, monitor);
+			// map mirror bank at 0x8000
+			makeNromPrgBank(program, basename + "_MIRROR", 0x8000, rombankBytes, monitor);
+		} else {
+			// 32k * 1 bank
+			rombankBytes = Arrays.copyOfRange(rom.prgRom, 0, 0x8000);
+			// map single bank at 0x8000
+			makeNromPrgBank(program, basename, 0x8000, rombankBytes, monitor);
 		}
 	}
 
+	protected void makeNromPrgBank(Program program, String name, int baseAddress, byte[] rombankBytes, TaskMonitor monitor)
+		 throws LockException, MemoryConflictException, AddressOverflowException, CancelledException, DuplicateNameException {
+		int romPermissions = MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
+
+		MemoryBlockDescription.initialized(baseAddress, rombankBytes.length, name, romPermissions, rombankBytes, true, monitor)
+			.create(program);
+		Msg.info("NromMapper", "Mapped PRG bank: " + name + " at " + String.format("%04x", baseAddress));
+	}
 }
