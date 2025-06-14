@@ -13,7 +13,7 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
         - [CPROM](https://www.nesdev.org/wiki/CPROM) (mapper 13)
     - 16K bankable PRG ROM
         - [MMC1/SxROM](https://www.nesdev.org/wiki/MMC1) (mapper 1, also includes mapper 16)
-        - [UxROM] (https://www.nesdev.org/wiki/UxROM) (mapper 2)
+        - [UxROM](https://www.nesdev.org/wiki/UxROM) (mapper 2)
         - [MMC4/FxROM](https://www.nesdev.org/wiki/MMC4) (mapper 10)
         - [UNROM 512](https://www.nesdev.org/wiki/UNROM_512) (mapper 30)
         - [Sunsoft 3](https://www.nesdev.org/wiki/INES_Mapper_067)/[Sunsoft 4](https://www.nesdev.org/wiki/INES_Mapper_068) (mappers 67, 68)
