@@ -1,5 +1,9 @@
 # Changelog
 
+## [v20250614] - 2025-06-14
+### Added
+- Add load options for PRG and CHR banks ([#28](https://github.com/kylewlacy/GhidraNes/pull/28)) by [@CBongo](https://github.com/CBongo)
+
 ## [v20250525] - 2025-05-25
 ### Changed
 - Added CHR ROM extraction to MMC3 mapper ([#20](https://github.com/kylewlacy/GhidraNes/pull/20) by [@GrasonHumphrey](https://github.com/GrasonHumphrey))
