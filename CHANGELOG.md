@@ -1,5 +1,9 @@
 # Changelog
 
+## [v20250629] - 2025-06-29
+### Added
+- Support for Ghidra 11.4 in build process ([#30](https://github.com/kylewlacy/GhidraNes/pull/30)) by [@CBongo](https://github.com/CBongo)
+
 ## [v20250614] - 2025-06-14
 ### Added
 - Add load options for PRG and CHR banks ([#28](https://github.com/kylewlacy/GhidraNes/pull/28)) by [@CBongo](https://github.com/CBongo)
