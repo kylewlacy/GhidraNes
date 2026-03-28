@@ -31,3 +31,25 @@ else {
 	throw GradleException("GHIDRA_INSTALL_DIR is not defined!")
 }
 //----------------------END "DO NOT MODIFY" SECTION-------------------------------
+
+// Detect the Ghidra major version from the install directory name.
+// Matches "ghidra_(\d+)." and treats anything >= 12 (or unrecognized) as the
+// "ghidra12" compat source set; anything older uses "ghidra11".
+def ghidraCompatSourceSet
+def ghidraVersionMatch = ghidraInstallDir =~ /ghidra_(\d+)\./
+if (ghidraVersionMatch) {
+	def majorVersion = ghidraVersionMatch[0][1].toInteger()
+	ghidraCompatSourceSet = (majorVersion >= 12) ? "ghidra12" : "ghidra11"
+} else {
+	// Default to ghidra12 if the version cannot be determined
+	ghidraCompatSourceSet = "ghidra12"
+}
+
+sourceSets {
+	main {
+		java {
+			// Add the version-appropriate adapter (provides GhidraNesLoader)
+			srcDir "src/compat/${ghidraCompatSourceSet}"
+		}
+	}
+}
