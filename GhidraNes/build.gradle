@@ -32,11 +32,16 @@ else {
 }
 //----------------------END "DO NOT MODIFY" SECTION-------------------------------
 
-// Detect the Ghidra major version from the install directory name.
-// Matches "ghidra_(\d+)." and treats anything >= 12 (or unrecognized) as the
-// "ghidra12" compat source set; anything older uses "ghidra11".
+// Detect the Ghidra major version from application.properties in the install dir.
+// Falls back to "ghidra12" if the file or property is missing.
 def ghidraCompatSourceSet
-def ghidraVersionMatch = ghidraInstallDir =~ /ghidra_(\d+)\./
+def appProps = new Properties()
+def appPropsFile = new File(ghidraInstallDir, "Ghidra/application.properties")
+if (appPropsFile.exists()) {
+	appPropsFile.withInputStream { appProps.load(it) }
+}
+def ghidraVersion = appProps.getProperty("application.version", "")
+def ghidraVersionMatch = ghidraVersion =~ /^(\d+)\./
 if (ghidraVersionMatch) {
 	def majorVersion = ghidraVersionMatch[0][1].toInteger()
 	ghidraCompatSourceSet = (majorVersion >= 12) ? "ghidra12" : "ghidra11"
