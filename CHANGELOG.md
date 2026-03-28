@@ -1,5 +1,9 @@
 # Changelog
 
+## [v20260328] - 2026-03-28
+### Added
+- Support for newer versions of Ghidra (11.4.x, 12.x) in build process and releases.  As 12.x has incompatible API changes, we introduce some wrapper classes that are selected based on the GHIDRA_INSTALL_DIR.  If we decide to drop support for pre-12 versions at some point, we can undo this bit.
+
 ## [v20250629] - 2025-06-29
 ### Added
 - Support for Ghidra 11.4 in build process ([#30](https://github.com/kylewlacy/GhidraNes/pull/30)) by [@CBongo](https://github.com/CBongo)

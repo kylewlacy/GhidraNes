@@ -20,28 +20,38 @@ jobs:
           - "11.3.1"
           - "11.3.2"
           - "11.4"
+          - "11.4.1"
+          - "11.4.2"
+          - "11.4.3"
+          - "12.0"
+          - "12.0.1"
+          - "12.0.2"
+          - "12.0.3"
+          - "12.0.4"
 
     steps:
     - name: Clone Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Install Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: '21'
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4
+      uses: gradle/actions/setup-gradle@v5
+      with:
+        develocity-injection-enabled: false
 
     - name: Install Ghidra ${{ matrix.ghidra }}
-      uses: antoniovazquezblanco/setup-ghidra@v2.0.10
+      uses: antoniovazquezblanco/setup-ghidra@v2.1.0
       with:
         auth_token: ${{ secrets.GITHUB_TOKEN }}
         version: ${{ matrix.ghidra }}
 
     - name: Build the extension for Ghidra ${{ matrix.ghidra }}
-      run: gradle -PGHIDRA_INSTALL_DIR=${GHIDRA_INSTALL_DIR} -p GhidraNes
+      run: gradle -PGHIDRA_INSTALL_DIR=${{ env.GHIDRA_INSTALL_DIR }} -p GhidraNes
 
     - name: Prepare artifact
       id: prepare
@@ -57,7 +67,7 @@ jobs:
         GHIDRA_VERSION: ${{ matrix.ghidra }}
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: GhidraNes_Ghidra_${{ matrix.ghidra }}
         path: ${{ steps.prepare.outputs.artifact-path }}

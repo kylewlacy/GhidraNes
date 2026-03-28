@@ -27,10 +27,8 @@ import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractProgramWrapperLoader;
 import ghidra.app.util.opinion.LoadSpec;
-import ghidra.framework.model.DomainObject;
 import ghidra.framework.store.LockException;
 import ghidra.program.model.address.AddressOverflowException;
-import ghidra.program.model.lang.Language;
 import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryConflictException;
@@ -44,20 +42,24 @@ import ghidranes.errors.UnimplementedNesMapperException;
 import ghidranes.util.MemoryBlockDescription;
 
 /**
- * This loader parses an iNES ROM file and maps the PRG and CHR rom appropriately
+ * Shared loader logic, API-version-agnostic. The three Ghidra-version-sensitive
+ * methods (load, getDefaultOptions, createDefaultMemoryBlocks) are implemented
+ * by version-specific adapter subclasses that delegate back to the protected
+ * methods here.
  */
-public class GhidraNesLoader extends AbstractProgramWrapperLoader {
+public abstract class GhidraNesLoaderBase extends AbstractProgramWrapperLoader {
 
 	public static final String LOADER_NAME = "NES ROM";
 
 	private static final String OPTION_NAME_MIRROR = "Create mirror blocks for RAM and IO";
 	private static final Boolean OPTION_DEFAULT_MIRROR = true;
 
-	// in theory you could (should?)"rebuild" the rom object in the methods that need
-	// it from the ByteProvider instead of using a local variable here
-	protected NesRom rom;
+	// Stashed during load so that createDefaultMemoryBlocks (which only receives
+	// Program on older Ghidra versions) can see the user's choice.
+	protected Boolean wantMirrors = OPTION_DEFAULT_MIRROR;
 
-	private Boolean wantMirrors = OPTION_DEFAULT_MIRROR;
+	// Stashed by findSupportedLoadSpecs so getDefaultOptions can call rom.getLoadOptions()
+	protected NesRom rom;
 
 	@Override
 	public String getName() {
@@ -71,90 +73,73 @@ public class GhidraNesLoader extends AbstractProgramWrapperLoader {
 		InputStream bytes = provider.getInputStream(0);
 
 		try {
-			// Try to parse the ROM header (will throw an exception if parsing fails)
 			rom = new NesRom(bytes);
-
-			// If successful, add the load spec
-			LanguageCompilerSpecPair languageCompilerSpecPair = new LanguageCompilerSpecPair("6502:LE:16:default", "default");
+			LanguageCompilerSpecPair languageCompilerSpecPair =
+				new LanguageCompilerSpecPair("6502:LE:16:default", "default");
 			LoadSpec loadSpec = new LoadSpec(this, 0, languageCompilerSpecPair, true);
 			loadSpecs.add(loadSpec);
 		}
 		catch (NesRomException e) {
-			// If parsing failed, do not add the load spec
+			// not an NES ROM
 		}
 		return loadSpecs;
 	}
 
-	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, TaskMonitor monitor, MessageLog log)
+	// -------------------------------------------------------------------------
+	// Protected implementation methods called by the version-specific adapters
+	// -------------------------------------------------------------------------
+
+	protected void doLoad(ByteProvider provider, List<Option> options, Program program,
+			TaskMonitor monitor, MessageLog log)
 			throws CancelledException, IOException {
 
-		// have to stash a local copy of the mirror option cause
-		// createDefaultMemoryBlocks() doesn't have access the load options
 		wantMirrors = shouldCreateMirrors(options);
 
 		InputStream bytes = provider.getInputStream(0);
-		NesRom rom;
+		NesRom loadRom;
 
 		try {
-			rom = new NesRom(bytes);
-		} catch (NesRomException e) {
+			loadRom = new NesRom(bytes);
+		}
+		catch (NesRomException e) {
 			throw new RuntimeException(e);
 		}
 
 		try {
-			// create base ROM bank to overlay banks
 			int romPermissions =
 				MemoryBlockDescription.READ | MemoryBlockDescription.EXECUTE;
-			MemoryBlockDescription.uninitialized(0x8000, 0x8000, "PRG_ROM", romPermissions, false)
+			MemoryBlockDescription
+				.uninitialized(0x8000, 0x8000, "PRG_ROM", romPermissions, false)
 				.create(program);
-			
-			// map the banks
-			rom.applyMapper(program, monitor, options);
-		} catch (LockException | MemoryConflictException | AddressOverflowException
-				 | DuplicateNameException | InvalidInputException | UnimplementedNesMapperException
-				 | InvalidNesRomHeaderException e) {
+
+			loadRom.applyMapper(program, monitor, options);
+		}
+		catch (LockException | MemoryConflictException | AddressOverflowException
+				| DuplicateNameException | InvalidInputException
+				| UnimplementedNesMapperException | InvalidNesRomHeaderException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	@Override
-	public List<Option> getDefaultOptions(ByteProvider provider, LoadSpec loadSpec,
-			DomainObject domainObject, boolean isLoadIntoProgram) {
-		List<Option> list =
-			super.getDefaultOptions(provider, loadSpec, domainObject, isLoadIntoProgram);
-
-		// general options
+	protected List<Option> doGetDefaultOptions(ByteProvider provider, LoadSpec loadSpec,
+			List<Option> list) {
 		list.add(new Option(OPTION_NAME_MIRROR, OPTION_DEFAULT_MIRROR));
-
-		// identify ROM-specific options based on NES header info
 		list.addAll(rom.getLoadOptions());
-
 		return list;
 	}
 
-	@Override
-	public String validateOptions(ByteProvider provider, LoadSpec loadSpec, List<Option> options, Program program) {
-		return super.validateOptions(provider, loadSpec, options, program);
-	}
-
-	@Override
-	protected void createDefaultMemoryBlocks(Program program, Language language, MessageLog log) {
-		// NOTE: We skip the default memory blocks because Ghidra's default 6502 memory map
-		// differs from the NES's memory map
-		//		super.createDefaultMemoryBlocks(program, language, log);
-		// TODO: consider creating an NES "language" with the correct memory map
-
+	protected void doCreateDefaultMemoryBlocks(Program program) {
 		try {
 			int ramPermissions =
-				MemoryBlockDescription.READ | MemoryBlockDescription.WRITE | MemoryBlockDescription.EXECUTE;
+				MemoryBlockDescription.READ | MemoryBlockDescription.WRITE |
+				MemoryBlockDescription.EXECUTE;
 			int ppuPermissions =
-					MemoryBlockDescription.READ | MemoryBlockDescription.WRITE | MemoryBlockDescription.VOLATILE;
+				MemoryBlockDescription.READ | MemoryBlockDescription.WRITE |
+				MemoryBlockDescription.VOLATILE;
 			int apuIoPermissions =
-					MemoryBlockDescription.READ | MemoryBlockDescription.WRITE | MemoryBlockDescription.VOLATILE;
+				MemoryBlockDescription.READ | MemoryBlockDescription.WRITE |
+				MemoryBlockDescription.VOLATILE;
 
-			// TODO: Refactor mirrored sections!
 			MemoryBlockDescription.uninitialized(0x0000, 0x0800, "RAM", ramPermissions, false)
 				.create(program);
 			if (wantMirrors) {
@@ -191,20 +176,32 @@ public class GhidraNesLoader extends AbstractProgramWrapperLoader {
 			}
 			MemoryBlockDescription.uninitialized(0x4000, 0x0018, "APU_IO", apuIoPermissions, false)
 				.create(program);
-		} catch (LockException e) {
+		}
+		catch (LockException e) {
 			throw new RuntimeException(e);
-		} catch (DuplicateNameException e) {
+		}
+		catch (DuplicateNameException e) {
 			throw new RuntimeException(e);
-		} catch (MemoryConflictException e) {
+		}
+		catch (MemoryConflictException e) {
 			throw new RuntimeException(e);
-		} catch (AddressOverflowException e) {
+		}
+		catch (AddressOverflowException e) {
 			throw new RuntimeException(e);
-		} catch (CancelledException e) {
+		}
+		catch (CancelledException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	@Override
+	public String validateOptions(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+			Program program) {
+		return super.validateOptions(provider, loadSpec, options, program);
+	}
+
 	protected Boolean shouldCreateMirrors(List<Option> options) {
-		return OptionUtils.getBooleanOptionValue(OPTION_NAME_MIRROR, options, OPTION_DEFAULT_MIRROR);
+		return OptionUtils.getBooleanOptionValue(OPTION_NAME_MIRROR, options,
+			OPTION_DEFAULT_MIRROR);
 	}
 }
