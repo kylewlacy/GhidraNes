@@ -297,15 +297,18 @@ public abstract class NesMapper {
 		switch (mapperNum) {
 			// 16K or 32K fixed PRG ROM
 		case 0:   	// NROM
-		case 3:   	// CNROM
+		case 3,185: // CNROM
 		case 13:	// CPROM
+		case 87:
 			return prgRomSize; // bank size == rom size
 
 			// 16K bankable PRG ROM
 		case 1:		// MMC1 - SxROM  - could possibly be 32K banks
 		case 2:		// UxROM
 		case 10:	// MMC4 - FxROM
-		case 16,30,67,68:
+		case 16,153,157,159:  // Bandai FCG
+		case 73:  	// Konami VRC3
+		case 30,67,68,71,72:
 			return 0x4000; // 16K banks
 		
 			// 32K bankable PRG ROM
@@ -314,6 +317,7 @@ public abstract class NesMapper {
 		case 34:	// BNROM, NINA-001
 		case 38:
 		case 66:  	// GxROM
+		case 79,146: // NINA-003/006, Sachen 3015, SA-016
 		case 140:
 			return 0x8000; // 32K banks
 
@@ -326,13 +330,16 @@ public abstract class NesMapper {
 		case 65:
 		case 69:	// Sunsoft FME-7/5B
 		case 74:
+		case 75:    // Konami VRC1
 		case 76:	// Namco 109 variant
+		case 85:    // Konami VRC7
 		case 88,95:
 		case 118:	// MMC3 - TxSROM
 		case 119:	// MMC3 - TQROM
 		case 154,158,191,192,194,195:
 		case 206:	// DxROM
 		case 207:
+		case 210:   // Namco 175/340
 			return 0x2000; // 8K banks
 
 			// 8K/16K bankable PRG ROM
@@ -356,14 +363,15 @@ public abstract class NesMapper {
 		case 0:   	// NROM
 		case 1:		// MMC1 - SxROM
 		case 2:		// UxROM
-		case 3:   	// CNROM
+		case 3,185:	// CNROM
 		//case 5:	// MMC5 - ExROM
 		case 7:   	// AxROM
 		case 11:	//  ColorDreams
 		case 13:	// CPROM
 		case 34:	// BNROM, NINA-001
 		case 66:  	// GxROM
-		case 16,30,38,67,68,140:
+		case 79,146: // NINA-003/006, Sachen 3015, SA-016
+		case 30,38,67,68,72,87,140:
 			sizes.add(0x2000);
 		}
 
@@ -372,6 +380,7 @@ public abstract class NesMapper {
 		case 1:		// MMC1 - SxROM
 		//case 5:	// MMC5 - ExROM
 		case 10:	// MMC4 - FxROM
+		case 75:	// Konami VRC1
 			sizes.add(0x1000);
 		}
 
@@ -384,7 +393,7 @@ public abstract class NesMapper {
 		case 118:	// MMC3 - TxSROM
 		case 119:	// MMC3 - TQROM
 		case 206:	// DxROM
-		case 74,88,95,154,191,192,194,195,207:
+		case 74,88,95,154,158,191,192,194,195,207:
 			sizes.add(0x800);
 		}
 
@@ -398,10 +407,12 @@ public abstract class NesMapper {
 		//case 24,26:	// Konami VRC6
 		case 64:	// RAMBO-1
 		case 69:	// Sunsoft FME-7/5B
+		case 85:	// Konami VRC7
 		case 118:	// MMC3 - TxSROM
 		case 119:	// MMC3 - TQROM
 		case 206:	// DxROM
-		case 65,74,88,95,154,191,192,194,195,207:
+		case 210:  // Namco 175/340
+		case 16,65,74,88,95,154,158,159,191,192,194,195,207:
 		    sizes.add(0x400);
 		}
 		
