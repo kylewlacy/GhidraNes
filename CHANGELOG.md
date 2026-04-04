@@ -1,5 +1,9 @@
 # Changelog
 
+## [v20260404] - 2026-04-04
+### Added
+- Add support for a variety of mappers that did not require significant coding, just mapping them to one of the existing handlers.  This includes the remaining Bandai FCG mappers (153,157,159) and many of the remaining mappers that are "popular" (based on me skimming the results sorted by mapper) among the nescartdb. ([#35](https://github.com/kylewlacy/GhidraNes/pull/35)) by [@CBongo](https://github.com/CBongo), fixes [#34](https://github.com/kylewlacy/GhidraNes/issues/34)
+
 ## [v20260328] - 2026-03-28
 ### Added
 - Support for newer versions of Ghidra (11.4.x, 12.x) in build process and releases.  As 12.x has incompatible API changes, we introduce some wrapper classes that are selected based on the GHIDRA_INSTALL_DIR.  If we decide to drop support for pre-12 versions at some point, we can undo this bit.
