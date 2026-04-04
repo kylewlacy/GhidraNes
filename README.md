@@ -11,17 +11,21 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
         - [NROM](https://www.nesdev.org/wiki/NROM) (mapper 0)
         - [CNROM](https://www.nesdev.org/wiki/CNROM) (mappers 3, 185)
         - [CPROM](https://www.nesdev.org/wiki/CPROM) (mapper 13)
+        - Misc mapper [87](https://www.nesdev.org/wiki/INES_Mapper_087)
     - 16K bankable PRG ROM
-        - [MMC1/SxROM](https://www.nesdev.org/wiki/MMC1) (mapper 1, also includes mapper 16)
+        - [MMC1/SxROM](https://www.nesdev.org/wiki/MMC1) (mapper 1)
         - [UxROM](https://www.nesdev.org/wiki/UxROM) (mapper 2)
         - [MMC4/FxROM](https://www.nesdev.org/wiki/MMC4) (mapper 10)
+        - [Bandai FCG boards](https://www.nesdev.org/wiki/Bandai_FCG_board) (mappers 16, 153, 157, 159)
         - [UNROM 512](https://www.nesdev.org/wiki/UNROM_512) (mapper 30)
         - [Sunsoft 3](https://www.nesdev.org/wiki/INES_Mapper_067)/[Sunsoft 4](https://www.nesdev.org/wiki/INES_Mapper_068) (mappers 67, 68)
-        - Misc mapper [16](https://www.nesdev.org/wiki/INES_Mapper_016)
+        - [Konami VRC3](https://www.nesdev.org/wiki/VRC3) (mapper 73)
+        - Misc mappers [71](https://www.nesdev.org/wiki/INES_Mapper_071), [72](https://www.nesdev.org/wiki/INES_Mapper_072)
     - 32K bankable PRG ROM
         - [AxROM](https://www.nesdev.org/wiki/AxROM) (mapper 7)
         - [BNROM/NINA](https://www.nesdev.org/wiki/INES_Mapper_034) (mapper 34)
         - [GxROM](https://www.nesdev.org/wiki/GxROM) (mapper 66)
+        - [NINA003/006](https://www.nesdev.org/wiki/NINA-003-006) (mappers 79,146)
         - Misc mappers [11](https://www.nesdev.org/wiki/Color_Dreams), [38](https://www.nesdev.org/wiki/INES_Mapper_038), [140](https://www.nesdev.org/wiki/INES_Mapper_140)
     - 8K bankable PRG ROM
         - [MMC3/TxROM](https://www.nesdev.org/wiki/MMC3)/[TxSROM](https://www.nesdev.org/wiki/INES_Mapper_118)/[TQROM](https://www.nesdev.org/wiki/INES_Mapper_119) (mappers 4, 118, 119)
@@ -29,7 +33,9 @@ A Ghidra extension to support disassembling and analyzing NES ROMs.
         - [Konami VRC2/4](https://www.nesdev.org/wiki/VRC2_and_VRC4) (mappers 21, 22, 23, 25)
         - [RAMBO-1](https://www.nesdev.org/wiki/RAMBO-1) (mappers 64, 158)
         - [Sunsoft FME-7/5A/5B](https://www.nesdev.org/wiki/Sunsoft_FME-7) (mapper 69)
+        - [Konami VRC7](https://www.nesdev.org/wiki/VRC7) (mapper 85)
         - [DxROM](https://www.nesdev.org/wiki/DxROM) (mapper [206](https://www.nesdev.org/wiki/INES_Mapper_206))
+        - [Namco 175/340](https://www.nesdev.org/wiki/INES_Mapper_210) (mapper 210)
         - Misc mappers [18](https://www.nesdev.org/wiki/INES_Mapper_018), [65](https://www.nesdev.org/wiki/INES_Mapper_065), [74](https://www.nesdev.org/wiki/INES_Mapper_074), [76](https://www.nesdev.org/wiki/INES_Mapper_076), [88](https://www.nesdev.org/wiki/INES_Mapper_088), [95](https://www.nesdev.org/wiki/INES_Mapper_095), [154](https://www.nesdev.org/wiki/INES_Mapper_154), [191](https://www.nesdev.org/wiki/INES_Mapper_191), [192](https://www.nesdev.org/wiki/INES_Mapper_192), [194](https://www.nesdev.org/wiki/INES_Mapper_194), [195](https://www.nesdev.org/wiki/INES_Mapper_195)
 
 - Add labels and memory blocks in disassembly, making it easier to jump around a disassembled ROM!

@@ -32,6 +32,7 @@ import ghidra.program.model.address.AddressOverflowException;
 import ghidra.program.model.lang.LanguageCompilerSpecPair;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryConflictException;
+import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.exception.InvalidInputException;
@@ -79,8 +80,11 @@ public abstract class GhidraNesLoaderBase extends AbstractProgramWrapperLoader {
 			LoadSpec loadSpec = new LoadSpec(this, 0, languageCompilerSpecPair, true);
 			loadSpecs.add(loadSpec);
 		}
+		catch (InvalidNesRomHeaderException e) {
+			// Not an NES ROM — expected for non-NES files, stay silent
+		}
 		catch (NesRomException e) {
-			// not an NES ROM
+			Msg.warn(this, "Failed to parse NES ROM: " + e.getMessage());
 		}
 		return loadSpecs;
 	}
