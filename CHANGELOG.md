@@ -1,8 +1,12 @@
 # Changelog
 
+## [v20260531] - 2026-05-31
+### Added
+- Support for Ghidra 12.1 in build process ([#37](https://github.com/kylewlacy/GhidraNes/pull/37) by [@CBongo](https://github.com/CBongo))
+
 ## [v20260404] - 2026-04-04
 ### Added
-- Add support for a variety of mappers that did not require significant coding, just mapping them to one of the existing handlers.  This includes the remaining Bandai FCG mappers (153,157,159) and many of the remaining mappers that are "popular" (based on me skimming the results sorted by mapper) among the nescartdb. ([#35](https://github.com/kylewlacy/GhidraNes/pull/35)) by [@CBongo](https://github.com/CBongo), fixes [#34](https://github.com/kylewlacy/GhidraNes/issues/34)
+- Add support for a variety of mappers that did not require significant coding, just mapping them to one of the existing handlers.  This includes the remaining Bandai FCG mappers (153,157,159) and many of the remaining mappers that are "popular" (based on me skimming the results sorted by mapper among the nescartdb). ([#35](https://github.com/kylewlacy/GhidraNes/pull/35) by [@CBongo](https://github.com/CBongo), fixes [#34](https://github.com/kylewlacy/GhidraNes/issues/34))
 
 ## [v20260328] - 2026-03-28
 ### Added
@@ -10,11 +14,11 @@
 
 ## [v20250629] - 2025-06-29
 ### Added
-- Support for Ghidra 11.4 in build process ([#30](https://github.com/kylewlacy/GhidraNes/pull/30)) by [@CBongo](https://github.com/CBongo)
+- Support for Ghidra 11.4 in build process ([#30](https://github.com/kylewlacy/GhidraNes/pull/30) by [@CBongo](https://github.com/CBongo))
 
 ## [v20250614] - 2025-06-14
 ### Added
-- Add load options for PRG and CHR banks ([#28](https://github.com/kylewlacy/GhidraNes/pull/28)) by [@CBongo](https://github.com/CBongo)
+- Add load options for PRG and CHR banks ([#28](https://github.com/kylewlacy/GhidraNes/pull/28) by [@CBongo](https://github.com/CBongo))
 
 ## [v20250525] - 2025-05-25
 ### Changed
