@@ -11,9 +11,11 @@ import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressFactory;
 import ghidra.program.model.address.AddressOutOfBoundsException;
 import ghidra.program.model.address.AddressOverflowException;
+import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSpace;
 import ghidra.program.model.data.PointerDataType;
 import ghidra.program.model.listing.Program;
+import ghidra.program.database.function.OverlappingFunctionException;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryConflictException;
@@ -254,6 +256,18 @@ public abstract class NesMapper {
 			symbolTable.addExternalEntryPoint(vTargetAddress);
 
 			vTargetSymbol.setPrimary();
+			// A label alone is not enough: with several entry points, Ghidra's entry point analyzer only
+			// disassembles those its heuristics accept as subroutines, and handler idioms such as the MMC1
+			// reset `INC $8000`-style ROM write fail them, so reset/NMI stayed undisassembled. A placeholder
+			// function at the target is always disassembled and its body recomputed.
+			if (program.getFunctionManager().getFunctionAt(vTargetAddress) == null) {
+				try {
+					program.getFunctionManager().createFunction(targetLabel, vTargetAddress,
+						new AddressSet(vTargetAddress), SourceType.IMPORTED);
+				} catch (OverlappingFunctionException e) {
+					Msg.warn("NesMapper", "Vector " + vectorLabel + " target " + vTargetAddress + " is inside another function: " + e.getMessage());
+				}
+			}
 			try {
 				program.getListing().createData(vAddress, new PointerDataType());
 			} catch (CodeUnitInsertionException e) {
